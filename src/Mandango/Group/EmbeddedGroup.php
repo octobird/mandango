@@ -100,7 +100,29 @@ class EmbeddedGroup extends Group
             return array();
         }
 
-        $rap['root']->addFieldCache($rap['path']);
+        /* TODO
+         * 
+         * Suboptimal workaround to query cache bug with EmbeddedGroup:
+         * only add path until the first numeric element, but not that element.
+         * 
+         * Example:
+         * 
+         * If path is "comments.1.infos", only "comments" is added to the cache.
+         * 
+         * A better solution is to mark EmbeddedGroups, so the Query class can use
+         * MongoDB's array projection operator to project document fields inside
+         * arrays.
+         */
+        $path = [];
+        foreach (explode('.', $rap['path']) as $e) {
+            if (is_numeric($e)) {
+                break;
+            }
+            $path[] = $e;
+        }
+        $path = implode('.', $path);
+
+        $rap['root']->addFieldCache($path);
 
         $result = $rap['root']
             ->getRepository()

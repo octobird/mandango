@@ -62,7 +62,31 @@
                 !$this->isEmbeddedManyNew()
             ) {
                 $field = $rap['path'].'.{{ field.dbName }}';
-                $rap['root']->addFieldCache($field);
+
+                /* TODO
+                 * 
+                 * Suboptimal workaround to query cache bug with EmbeddedGroup:
+                 * only add path until the first numeric element, but not that element.
+                 * 
+                 * Example:
+                 * 
+                 * If path is "comments.1.infos", only "comments" is added to the cache.
+                 * 
+                 * A better solution is to mark EmbeddedGroups, so the Query class can use
+                 * MongoDB's array projection operator to project document fields inside
+                 * arrays.
+                 */
+                $path = [];
+                foreach (explode('.', $field) as $e) {
+                    if (is_numeric($e)) {
+                        break;
+                    }
+                    $path[] = $e;
+                }
+                $path = implode('.', $path);
+
+                $rap['root']->addFieldCache($path);
+
                 $collection = $this->getMandango()->getRepository(get_class($rap['root']))->getCollection();
                 $data = $collection->findOne(array('_id' => $rap['root']->getId()), array($field => 1));
                 foreach (explode('.', $field) as $key) {
