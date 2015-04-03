@@ -1038,6 +1038,7 @@ class CoreDocumentTest extends TestCase
         $comments->add($commentNew);
         $commentNew->getName();
         $this->assertSame(array('comments' => 1), $query->getFieldsCache());
+        $this->assertGreaterThan(0, count($savedComments));
         $savedInfos = $savedComments[0]->getInfos()->getSaved();
         $this->assertSame(array('comments' => 1), $query->getFieldsCache());
     }

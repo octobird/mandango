@@ -57,12 +57,13 @@ if (
 ) {
     %id% = \$commandResult['value']['sequence'];
 } else {
+    // Work around mongofill-hhvm's implementation of insert()
+    \$doc = array('_id' => \$repository->getCollectionName(), 'sequence' => $start);
     \$repository
         ->getConnection()
         ->getMongoDB()
         ->selectCollection('mandango_sequence_id_generator')
-        ->insert(array('_id' => \$repository->getCollectionName(), 'sequence' => $start)
-    );
+        ->insert(\$doc);
     %id% = $start;
 }
 EOF;
