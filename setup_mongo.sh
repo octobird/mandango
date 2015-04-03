@@ -8,7 +8,7 @@ if [[ $TRAVIS_PHP_VERSION == "hhvm" ]]; then
     git clone git://github.com/facebook/hhvm.git
     cd hhvm
     export HPHP_HOME=`pwd`
-    git checkout 1da451b # Tag:3.0.1
+    #git checkout 1da451b # Tag:3.0.1
     cd ..
 
     git clone https://github.com/mongofill/mongofill-hhvm
