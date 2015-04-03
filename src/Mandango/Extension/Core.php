@@ -660,7 +660,7 @@ EOF
     private function globalInheritableAndInheritanceProcess()
     {
         // inheritable
-        foreach ($this->configClasses as $class => &$configClass) {
+        foreach ($this->configClasses as $class => $configClass) {
             if ($configClass['inheritable']) {
                 if (!is_array($configClass['inheritable'])) {
                     throw new \RuntimeException(sprintf('The inheritable configuration of the class "%s" is not an array.', $class));
@@ -684,7 +684,7 @@ EOF
         }
 
         // inheritance
-        foreach ($this->configClasses as $class => &$configClass) {
+        foreach ($this->configClasses as $class => $configClass) {
             if (!$configClass['inheritance']) {
                 $configClass['_parent_events'] = array(
                     'preInsert'  => array(),
@@ -902,7 +902,7 @@ EOF
                         $this->configClasses[$discriminatorClass]['onDelete'][] = $onDelete;
                     }
                 } else {
-                    foreach ($this->configClasses as &$configClass) {
+                    foreach ($this->configClasses as $configClass) {
                         $configClass['onDelete'][] = $onDelete;
                     }
                 }
