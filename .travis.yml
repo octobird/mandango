@@ -1,19 +1,20 @@
 language: php
 
+sudo: required
+
 php:
   - 5.5
   - 5.6
   - hhvm
 
 env:
-  - MONGO_VERSION=1.4.5
+  # Current we only support 1.4.5 because of hhvm and mongofill
+  - MONGO_VERSION=1.4.5 
 
 services: mongodb
 
 before_script:
-  # - yes '' | pecl install -f mongo-${MONGO_VERSION}
-  # - phpenv rehash
-  - phpenv config-add mongo-php.ini || cat mongo-php.ini >> /etc/hhvm/php.ini
+  - ./setup_mongo.sh
   - composer self-update
   - composer install
 
