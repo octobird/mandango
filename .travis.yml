@@ -13,7 +13,7 @@ services: mongodb
 before_script:
   # - yes '' | pecl install -f mongo-${MONGO_VERSION}
   # - phpenv rehash
-  - phpenv config-add mongo-php.ini
+  - phpenv config-add mongo-php.ini || cat mongo-php.ini >> /etc/hhvm/php.ini
   - composer self-update
   - composer install
 
