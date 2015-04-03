@@ -25,4 +25,5 @@ matrix:
   exclude:
     - php: hhvm
       env: MONGO_VERSION=1.5.8
+    - php: hhvm
       env: MONGO_VERSION=1.6.6

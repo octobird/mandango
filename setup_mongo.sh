@@ -20,12 +20,17 @@ if [[ $TRAVIS_PHP_VERSION == "hhvm" ]]; then
     cat /etc/hhvm/php.ini
 
     # show mongo PHP extension version
-    echo "ext-mongo version: `php -r 'echo phpversion(\"mongo\");'`"
-    echo "ext-mongo version: `hhvm --php -r 'echo phpversion(\"mongo\");'`"
 
     cd ../..
+
+    phpenv rehash
+
+    echo "ext-mongo version: `hhvm --php -r 'echo phpversion(\"mongo\");'`"
 else
     yes '' | pecl install -f mongo-${MONGO_VERSION}
-    #phpenv config-add mongo-php.ini
+
     phpenv rehash
+
+    echo "ext-mongo version: `php -r 'echo phpversion(\"mongo\");'`"
 fi
+
