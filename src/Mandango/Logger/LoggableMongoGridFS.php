@@ -297,8 +297,9 @@ class LoggableMongoGridFS extends \MongoGridFS
     /*
      * findOne.
      */
-    public function findOne($query = array(), $fields = array())
+    public function findOne($query = NULL, $fields = NULL, array $options = NULL)
     {
+        // TODO: what's with the $options?
         $cursor = new LoggableMongoGridFSCursor($this, $query, $fields, 'findOne');
         $cursor->limit(-1);
 

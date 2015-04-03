@@ -60,10 +60,10 @@ class LoggableMongoDB extends \MongoDB
     /**
      * command.
      */
-    public function command($command, array $options = array())
+    public function command($command, array $options = NULL, &$hash = NULL)
     {
         $this->time->start();
-        $return = parent::command($command, $options);
+        $return = parent::command($command, $options, $hash);
         $time = $this->time->stop();
 
         $this->log(array(
