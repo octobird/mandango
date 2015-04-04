@@ -111,6 +111,11 @@ else
         command -v phpenv 2>&1 > /dev/null && phpenv rehash
 
         echo "ext-mongo version: `hhvm --php -r 'echo phpversion(\"mongo\");'`"
+
+        echo "Checking 'unimplemented bson_encode' bug..."
+        echo "`hhvm --php -r 'var_dump(function_exists(\"bson_encode\"));'`"
+        hhvm --php -r 'function bson_encode($data) {return $data;} print bson_encode("Yes, I can create the missing function. And call it.\n");'
+        echo $?
     elif [[ $MONGO_VERSION == "mongofill" ]]; then
         ./composer.phar require mongofill/mongofill=dev-master
         ./composer.phar install

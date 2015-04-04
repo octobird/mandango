@@ -1,0 +1,41 @@
+PHPUnit 3.7.38 by Sebastian Bergmann.
+
+Configuration read from /home/netom/hobbi/mandango/phpunit.xml
+
+...............................................................  63 / 485 ( 12%)
+.............................................array(3) {
+  [0]=>
+  array(3) {
+    ["name"]=>
+    string(3) "foo"
+    ["text"]=>
+    string(3) "bar"
+    ["infos"]=>
+    array(2) {
+      [0]=>
+      array(2) {
+        ["name"]=>
+        string(6) "foobar"
+        ["line"]=>
+        string(6) "barfoo"
+      }
+      [1]=>
+      array(1) {
+        ["text"]=>
+        string(3) "ups"
+      }
+    }
+  }
+  [1]=>
+  array(2) {
+    ["name"]=>
+    string(6) "fooups"
+    ["text"]=>
+    string(6) "upsfoo"
+  }
+  [2]=>
+  array(1) {
+    ["name"]=>
+    string(4) "foo3"
+  }
+}
