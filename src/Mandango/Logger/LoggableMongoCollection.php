@@ -84,7 +84,7 @@ class LoggableMongoCollection extends \MongoCollection
     /**
      * count.
      */
-    public function count(array $query = array(), $limit = 0, $skip = 0)
+    public function count($query = array(), $limit = 0, $skip = 0)
     {
         $this->time->start();
         $return = parent::count($query, $limit, $skip);
