@@ -127,7 +127,7 @@ class EmbeddedGroup extends Group
         $result = $rap['root']
             ->getRepository()
             ->getCollection()
-            ->findOne(array('_id' => $rap['root']->getId()), array($rap['path']))
+            ->findOne(array('_id' => $rap['root']->getId()), array($rap['path'] => true))
         ;
 
         return ($result && isset($result[$rap['path']])) ? $result[$rap['path']] : array();
