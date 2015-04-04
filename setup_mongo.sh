@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $TRAVIS_PHP_VERSION == "hhvm" ]]; then
+if [[ $MONGO_VERSION == "mongofill-hhvm" ]]; then
 
     mkdir BUILD
     cd BUILD
@@ -26,6 +26,8 @@ if [[ $TRAVIS_PHP_VERSION == "hhvm" ]]; then
     phpenv rehash
 
     echo "ext-mongo version: `hhvm --php -r 'echo phpversion(\"mongo\");'`"
+elif [[ $MONGO_VERSION == "mongofill" ]]; then
+    composer require mongofill/mongofill=dev-master
 else
     yes '' | pecl install -f mongo-${MONGO_VERSION}
 
