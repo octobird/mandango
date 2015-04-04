@@ -2,6 +2,18 @@ language: php
 
 sudo: required
 
+php:
+  - hhvm
+  - 5.6
+  - 5.5
+
+env:
+  - MONGO_VERSION=mongofill-hhvm
+  - MONGO_VERSION=mongofill
+  - MONGO_VERSION=1.6.6
+  - MONGO_VERSION=1.5.8
+  - MONGO_VERSION=1.4.5
+
 services: mongodb
 
 before_script:
@@ -10,22 +22,14 @@ before_script:
 script: phpunit
 
 matrix:
-  include:
+  exclude:
     - php: hhvm
+      env: MONGO_VERSION=1.6.6
+    - php: hhvm
+      env: MONGO_VERSION=1.5.8
+    - php: hhvm
+      env: MONGO_VERSION=1.4.5
+    - php: 5.5
       env: MONGO_VERSION=mongofill-hhvm
-    - php: hhvm
-      env: MONGO_VERSION=mongofill
-    - php: 5.5
-      env: MONGO_VERSION=mongofill
-    - php: 5.5
-      env: MONGO_VERSION=1.4.5
-    - php: 5.5
-      env: MONGO_VERSION=1.5.8
-    - php: 5.5
-      env: MONGO_VERSION=1.6.6
     - php: 5.6
-      env: MONGO_VERSION=1.4.5
-    - php: 5.6
-      env: MONGO_VERSION=1.5.8
-    - php: 5.6
-      env: MONGO_VERSION=1.6.6
+      env: MONGO_VERSION=mongofill-hhvm
