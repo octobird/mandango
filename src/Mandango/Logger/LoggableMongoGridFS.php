@@ -289,7 +289,7 @@ class LoggableMongoGridFS extends \MongoGridFS
     /*
      * find.
      */
-    public function find($query = array(), $fields = array())
+    public function find(array $query = array(), array $fields = array())
     {
         return new LoggableMongoGridFSCursor($this, $query, $fields);
     }
