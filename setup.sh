@@ -37,3 +37,4 @@ else
     echo "ext-mongo version: `php -r 'echo phpversion(\"mongo\");'`"
 fi
 
+./composer.phar install
