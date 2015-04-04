@@ -113,7 +113,7 @@ else
         echo "ext-mongo version: `hhvm --php -r 'echo phpversion(\"mongo\");'`"
     elif [[ $MONGO_VERSION == "mongofill" ]]; then
         ./composer.phar require mongofill/mongofill=dev-master
-        ./composer install
+        ./composer.phar install
     else
         yes '' | pecl install -f mongo-${MONGO_VERSION}
 
