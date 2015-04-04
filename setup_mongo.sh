@@ -27,7 +27,8 @@ if [[ $MONGO_VERSION == "mongofill-hhvm" ]]; then
 
     echo "ext-mongo version: `hhvm --php -r 'echo phpversion(\"mongo\");'`"
 elif [[ $MONGO_VERSION == "mongofill" ]]; then
-    composer require mongofill/mongofill=dev-master
+    echo "Nothing to do here, mongofill is in composer.json, it will autoload"
+    echo "if there's no mongo classes available"
 else
     yes '' | pecl install -f mongo-${MONGO_VERSION}
 

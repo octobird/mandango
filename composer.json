@@ -17,7 +17,8 @@
     ],
     "require": {
         "php":            ">=5.3.0",
-        "netom/mondator": "dev-master"
+        "netom/mondator": "dev-master",
+        "mongofill/mongofill": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "~3.7"
