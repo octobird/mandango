@@ -4,138 +4,8 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "269a8e23cc846e90d7d8b73016b3cdb2",
+    "hash": "4178d03ff29599b832bf08899e2638f6",
     "packages": [
-        {
-            "name": "mongofill/mongofill",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mongofill/mongofill.git",
-                "reference": "5fbe953ba6db0d8b2b7aaa513773a025b5206258"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mongofill/mongofill/zipball/5fbe953ba6db0d8b2b7aaa513773a025b5206258",
-                "reference": "5fbe953ba6db0d8b2b7aaa513773a025b5206258",
-                "shasum": ""
-            },
-            "provide": {
-                "ext-mongo": "*"
-            },
-            "require-dev": {
-                "athletic/athletic": "dev-master"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    {
-                        "Mongofill": "src/"
-                    },
-                    {
-                        "Mongo": "src/Mongo.php"
-                    },
-                    {
-                        "MongoBinData": "src/MongoBinData.php"
-                    },
-                    {
-                        "MongoClient": "src/MongoClient.php"
-                    },
-                    {
-                        "MongoCode": "src/MongoCode.php"
-                    },
-                    {
-                        "MongoCollection": "src/MongoCollection.php"
-                    },
-                    {
-                        "MongoConnectionException": "src/MongoConnectionException.php"
-                    },
-                    {
-                        "MongoCursor": "src/MongoCursor.php"
-                    },
-                    {
-                        "MongoCursorException": "src/MongoCursorException.php"
-                    },
-                    {
-                        "MongoCursorTimeoutException": "src/MongoCursorTimeoutException.php"
-                    },
-                    {
-                        "MongoDB": "src/MongoDB.php"
-                    },
-                    {
-                        "MongoDBRef": "src/MongoDBRef.php"
-                    },
-                    {
-                        "MongoDate": "src/MongoDate.php"
-                    },
-                    {
-                        "MongoException": "src/MongoException.php"
-                    },
-                    {
-                        "MongoGridFS": "src/MongoGridFS.php"
-                    },
-                    {
-                        "MongoGridFSFile": "src/MongoGridFSFile.php"
-                    },
-                    {
-                        "MongoGridFSException": "src/MongoGridFSException.php"
-                    },
-                    {
-                        "MongoGridFSCursor": "src/MongoGridFSCursor.php"
-                    },
-                    {
-                        "MongoId": "src/MongoId.php"
-                    },
-                    {
-                        "MongoInt32": "src/MongoInt32.php"
-                    },
-                    {
-                        "MongoInt64": "src/MongoInt64.php"
-                    },
-                    {
-                        "MongoLog": "src/MongoLog.php"
-                    },
-                    {
-                        "MongoMaxKey": "src/MongoMaxKey.php"
-                    },
-                    {
-                        "MongoMinKey": "src/MongoMinKey.php"
-                    },
-                    {
-                        "MongoRegex": "src/MongoRegex.php"
-                    },
-                    {
-                        "MongoResultException": "src/MongoResultException.php"
-                    },
-                    {
-                        "MongoTimestamp": "src/MongoTimestamp.php"
-                    }
-                ],
-                "files": [
-                    "src/functions.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jakub Husák",
-                    "email": "husak.j@gmail.com"
-                },
-                {
-                    "name": "Mongofill Community",
-                    "homepage": "https://github.com/mongofill/mongofill/graphs/contributors"
-                },
-                {
-                    "name": "Máximo Cuadros",
-                    "email": "mcuadros@gmail.com"
-                }
-            ],
-            "description": "Polyfill of PECL Mongo extension",
-            "time": "2015-04-03 22:22:29"
-        },
         {
             "name": "netom/mondator",
             "version": "dev-master",
@@ -669,8 +539,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "netom/mondator": 20,
-        "mongofill/mongofill": 20
+        "netom/mondator": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

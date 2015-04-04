@@ -6,8 +6,8 @@ Mandango is a simple, powerful and ultrafast Object Document Mapper (ODM) for PH
 
 ## MongoDB driver
 
-Mandago uses the PECL mongo extension version 1.4.5 on php >= 5.5.0, and the
-mongofill(-hhvm) extension on hhvm.
+Mandago aims to be compatible with the mongo extension versions 1.4.5-1.6.6 on php >= 5.5.0, and the
+mongofill library. Mandango can also be run on HHVM with mongofill or mongofill-hhvm.
 
 ## Documentation
 
