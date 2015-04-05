@@ -54,21 +54,12 @@ else
         mkdir BUILD
         cd BUILD
 
-        git clone https://github.com/mongofill/mongofill-hhvm
-        cd mongofill-hhvm
-        git checkout -b branch-58c86c0a40b97d10ee6a7bb8c1e233d2f9c78420 58c86c0a40b97d10ee6a7bb8c1e233d2f9c78420
-
-        # See mongofill-hhvm/tools/travis.sh for the source of the lines below:
-
-        sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-        sudo apt-get update -qq
-        sudo mkdir /etc/hhvm -p
-        sudo touch /etc/hhvm/php.ini
-        sudo chmod ugo+rw /etc/hhvm/php.ini
-
-        # install hhvm-dev
-        sudo apt-get install -qq hhvm-dev g++-4.8 libboost-dev
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
+        # Well, well, well. We need a recent HHVM, travis MV has some ancient bug-ridden crap.
+        export DEBIAN_FRONTEND=noninteractive
+        sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test || die "Could not add ppa:ubuntu-toolchain-r/test"
+        sudo apt-get update -qy || die "apt-get update failed"
+        sudo apt-get install -qy hhvm hhvm-dev g++-4.8 libboost-dev || die "Could not install packages"
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90 || die "Could not set g++-4.8 as the default compiler"
 
         # install libgoogle.log-dev
         wget http://launchpadlibrarian.net/80433359/libgoogle-glog0_0.3.1-1ubuntu1_amd64.deb
@@ -91,14 +82,14 @@ else
         tar xzf 1.1.4.tar.gz
         cd libbson-1.1.4
         ./autogen.sh
-        ./configure
         make
         sudo make install
         cd ..
 
-        sudo wget -O /usr/include/hphp/runtime/version.h https://raw.githubusercontent.com/facebook/hhvm/HHVM-3.5.0/hphp/runtime/version.h
-
         # compile mongofill-hhvm
+        git clone https://github.com/mongofill/mongofill-hhvm
+        cd mongofill-hhvm
+        git checkout -b branch-58c86c0a40b97d10ee6a7bb8c1e233d2f9c78420 58c86c0a40b97d10ee6a7bb8c1e233d2f9c78420
         ./build.sh || exit 1
 
         sudo mkdir /hhvm-extensions && sudo mv mongo.so /hhvm-extensions
