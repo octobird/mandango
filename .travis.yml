@@ -19,7 +19,7 @@ services: mongodb
 before_script:
   - ./setup.sh
 
-script: phpunit
+script: ./vendor/bin/phpunit
 
 matrix:
   exclude:
