@@ -27,10 +27,11 @@ class Container
         'float'          => 'Mandango\Type\FloatType',
         'integer'        => 'Mandango\Type\IntegerType',
         'raw'            => 'Mandango\Type\RawType',
-        'referenceOne'  => 'Mandango\Type\ReferenceOneType',
-        'referenceMany' => 'Mandango\Type\ReferenceManyType',
+        'referenceOne'   => 'Mandango\Type\ReferenceOneType',
+        'referenceMany'  => 'Mandango\Type\ReferenceManyType',
         'serialized'     => 'Mandango\Type\SerializedType',
         'string'         => 'Mandango\Type\StringType',
+        'array'          => 'Mandango\Type\ArrayType'
     );
 
     static private $types = array();
