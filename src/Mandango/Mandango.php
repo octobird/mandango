@@ -284,7 +284,7 @@ class Mandango
         $document = new $documentClass($this);
         $document->initializeDefaults();
         if (method_exists($document, 'initialize')) {
-            call_user_func_array(array($document, 'initialize'), $initializeArgs);
+            call_user_func(array($document, 'initialize'), $initializeArgs);
         }
 
         return $document;

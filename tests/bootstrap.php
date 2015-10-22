@@ -21,5 +21,6 @@ $mondator->setExtensions(array(
     )),
     new Mandango\Extension\DocumentArrayAccess(),
     new Mandango\Extension\DocumentPropertyOverloading(),
+    new Mandango\Extension\DocumentInitializer()
 ));
 $mondator->process();
