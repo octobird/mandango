@@ -1,17 +1,4 @@
 <?php
-
-    /**
-     * Validate document data
-     *
-     * Override this method for actual validation / filtering
-     *
-     * @param array $data The document data to initialize the document
-     */
-    public function validate($data)
-    {
-        return $data;
-    }
-
     /**
      * Initialize the document with data.
      *
@@ -20,17 +7,8 @@
      * If the object has already been initialized or saved, it
      * overwrites the fields with the data provided.
      */
-    public function initialize($data = array())
+    public function initialize(array $data)
     {
-        // TODO: check data
-        // TODO: initialize embeds
-        // TODO: initialize references
-        if (empty($data)) {
-            return;
-        }
-
-        $data = $this->validate($data);
-
         // Fields
 {% for name, field in config_class.fields %}
         if (array_key_exists('{{name}}', $data)) {
