@@ -183,7 +183,7 @@ class LoggableMongoCursor extends \MongoCursor
                 'nscanned'        => $explain['nscanned'],
                 'nscannedObjects' => $explain['nscannedObjects'],
                 'n'               => $explain['n'],
-                'indexBounds'     => $explain['indexBounds'],
+                'indexBounds'     => isset($explain['indexBounds']) ? $explain['indexBounds'] : null
             );
             $log['time'] = $explain['millis'];
 
