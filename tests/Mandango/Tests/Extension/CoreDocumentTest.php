@@ -902,7 +902,7 @@ class CoreDocumentTest extends TestCase
         $article = $this->mandango->create('Model\Article')->setId($article->getId())->setIsNew(false);
 
         $this->assertSame(array(
-            'id'       => $article->getId(),
+            'id'       => $article->getId()->{'$id'},
             'title'    => 'foo',
             'content'  => 'bar',
             'note'     => null,

@@ -85,7 +85,7 @@
         $array = array();
 {% else %}
         $id = $this->getId();
-        if ($id instanceof MongoId) {
+        if ($id instanceof \MongoId) {
             $id = $id->{'$id'};
         }
         $array = array('id' => $id);
