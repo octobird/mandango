@@ -106,4 +106,11 @@ abstract class EmbeddedDocument extends AbstractDocument
 
         return false !== strpos($rap['path'], '._add');
     }
+
+    public function preInsertEvent() {}
+    public function postInsertEvent() {}
+    public function preUpdateEvent() {}
+    public function postUpdateEvent() {}
+    public function preDeleteEvent() {}
+    public function postDeleteEvent() {}
 }
