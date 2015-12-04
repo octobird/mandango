@@ -84,7 +84,11 @@
 {% elseif config_class.isEmbedded %}
         $array = array();
 {% else %}
-        $array = array('id' => $this->getId());
+        $id = $this->getId();
+        if ($id instanceof MongoId) {
+            $id = $id->{'$id'};
+        }
+        $array = array('id' => $id);
 {% endif %}
 
 {# fields #}
