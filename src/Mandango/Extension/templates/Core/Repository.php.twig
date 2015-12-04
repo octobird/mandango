@@ -123,6 +123,16 @@
                 }
 {% endif %}
                 $document->preInsertEvent();
+{% for name, embedded in config_class.embeddedsOne %}
+                if ($mdoc = $document->get{{ name|ucfirst }}()) {
+                    $mdoc->preInsertEvent();
+                }
+{% endfor %}
+{% for name, embedded in config_class.embeddedsMany %}
+                foreach ($document->get{{ name|ucfirst }}() as $mdoc) {
+                    $mdoc->preInsertEvent();
+                }
+{% endfor %}
                 $a[$oid] = $document->queryForSave();
                 {{ mandango_id_generator(config_class, "$a[$oid]['_id']", 16) }}
             }
@@ -141,6 +151,16 @@
                     $document->resetGroups();
 {% endif %}
                     $document->postInsertEvent();
+{% for name, embedded in config_class.embeddedsOne %}
+                if ($mdoc = $document->get{{ name|ucfirst }}()) {
+                    $mdoc->postInsertEvent();
+                }
+{% endfor %}
+{% for name, embedded in config_class.embeddedsMany %}
+                foreach ($document->get{{ name|ucfirst }}() as $mdoc) {
+                    $mdoc->postInsertEvent();
+                }
+{% endfor %}
                 }
             }
 {# Without using batch insert #}
@@ -151,7 +171,18 @@
                     continue;
                 }
 {% endif %}
+                // Run pre-insert events for the document and embeddeds
                 $document->preInsertEvent();
+{% for name, embedded in config_class.embeddedsOne %}
+                if ($mdoc = $document->get{{ name|ucfirst }}()) {
+                    $mdoc->preInsertEvent();
+                }
+{% endfor %}
+{% for name, embedded in config_class.embeddedsMany %}
+                foreach ($document->get{{ name|ucfirst }}() as $mdoc) {
+                    $mdoc->preInsertEvent();
+                }
+{% endfor %}
                 $data = $document->queryForSave();
                 {{ mandango_id_generator(config_class, "$data['_id']", 16) }}
 
@@ -166,6 +197,16 @@
                 $document->resetGroups();
 {% endif %}
                 $document->postInsertEvent();
+{% for name, embedded in config_class.embeddedsOne %}
+                if ($mdoc = $document->get{{ name|ucfirst }}()) {
+                    $mdoc->postInsertEvent();
+                }
+{% endfor %}
+{% for name, embedded in config_class.embeddedsMany %}
+                foreach ($document->get{{ name|ucfirst }}() as $mdoc) {
+                    $mdoc->postInsertEvent();
+                }
+{% endfor %}
             }
 {% endif %}
         }
@@ -174,6 +215,16 @@
         foreach ($updates as $document) {
             if ($document->isModified()) {
                 $document->preUpdateEvent();
+{% for name, embedded in config_class.embeddedsOne %}
+                if ($mdoc = $document->get{{ name|ucfirst }}()) {
+                    $mdoc->preUpdateEvent();
+                }
+{% endfor %}
+{% for name, embedded in config_class.embeddedsMany %}
+                foreach ($document->get{{ name|ucfirst }}() as $mdoc) {
+                    $mdoc->preUpdateEvent();
+                }
+{% endfor %}
                 $query = $document->queryForSave();
                 $collection->update(array('_id' => $this->idToMongo($document->getId())), $query, $updateOptions);
                 $document->clearModified();
@@ -181,6 +232,16 @@
                 $document->resetGroups();
 {% endif %}
                 $document->postUpdateEvent();
+{% for name, embedded in config_class.embeddedsOne %}
+                if ($mdoc = $document->get{{ name|ucfirst }}()) {
+                    $mdoc->postUpdateEvent();
+                }
+{% endfor %}
+{% for name, embedded in config_class.embeddedsMany %}
+                foreach ($document->get{{ name|ucfirst }}() as $mdoc) {
+                    $mdoc->postUpdateEvent();
+                }
+{% endfor %}
             }
         }
     }
@@ -199,6 +260,16 @@
         $ids = array();
         foreach ($documents as $document) {
             $document->preDeleteEvent();
+{% for name, embedded in config_class.embeddedsOne %}
+            if ($mdoc = $document->get{{ name|ucfirst }}()) {
+                $mdoc->preDeleteEvent();
+            }
+{% endfor %}
+{% for name, embedded in config_class.embeddedsMany %}
+            foreach ($document->get{{ name|ucfirst }}() as $mdoc) {
+                $mdoc->preDeleteEvent();
+            }
+{% endfor %}
             $ids[] = $id = $this->idToMongo($document->getId());
         }
 
@@ -210,6 +281,16 @@
 
         foreach ($documents as $document) {
             $document->postDeleteEvent();
+{% for name, embedded in config_class.embeddedsOne %}
+            if ($mdoc = $document->get{{ name|ucfirst }}()) {
+                $mdoc->postDeleteEvent();
+            }
+{% endfor %}
+{% for name, embedded in config_class.embeddedsMany %}
+            foreach ($document->get{{ name|ucfirst }}() as $mdoc) {
+                $mdoc->postDeleteEvent();
+            }
+{% endfor %}
         }
 
         $identityMap =& $this->getIdentityMap()->allByReference();

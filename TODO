@@ -1,5 +1,7 @@
 TODO
 ====
 
-* Make this lib compatible with more recent Mongo plugins
+* Tests for {pre|post}{insert|update|delete} events with embeddeds too
+* Integrate behaviors
+* Refactor / rewrite column caching to better handle embeddeds
 
