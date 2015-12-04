@@ -13,8 +13,8 @@
 {% if config_class.inheritance %}
         parent::fromArray($array);
 {% elseif not config_class.isEmbedded %}
-        if (isset($array['id'])) {
-            $this->setId($array['id']);
+        if (isset($array['_id'])) {
+            $this->setId($array['_id']);
         }
 {% endif %}
 {# fields #}
@@ -88,7 +88,7 @@
         if ($id instanceof \MongoId) {
             $id = $id->{'$id'};
         }
-        $array = array('id' => $id);
+        $array = array('_id' => $id);
 {% endif %}
 
 {# fields #}
