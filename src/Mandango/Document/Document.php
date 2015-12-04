@@ -215,4 +215,11 @@ abstract class Document extends AbstractDocument
             }
         }
     }
+
+    public function preInsertEvent() {}
+    public function postInsertEvent() {}
+    public function preUpdateEvent() {}
+    public function postUpdateEvent() {}
+    public function preDeleteEvent() {}
+    public function postDeleteEvent() {}
 }
