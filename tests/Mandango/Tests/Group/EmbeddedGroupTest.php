@@ -28,10 +28,12 @@ class EmbeddedGroupTest extends TestCase
         $group->setSavedData($data);
         $this->assertSame(2, $group->count());
         $saved = $group->getSaved();
-        $this->assertEquals($this->mandango->create('Model\Comment')->setDocumentData($data[0]), $saved[0]);
-        $this->assertSame(array('root' => $article, 'path' => 'comments.0'), $saved[0]->getRootAndPath());
-        $this->assertEquals($this->mandango->create('Model\Comment')->setDocumentData($data[0]), $saved[0]);
-        $this->assertSame(array('root' => $article, 'path' => 'comments.1'), $saved[1]->getRootAndPath());
+        $this->assertEquals('foo', $saved[0]->getName());
+        $this->assertEquals($article, $saved[0]->_root);
+        $this->assertEquals('comments.0', $saved[0]->_path);
+        $this->assertEquals('bar', $saved[1]->getName());
+        $this->assertEquals($article, $saved[1]->_root);
+        $this->assertEquals('comments.1', $saved[1]->_path);
     }
 
     public function testRootAndPath()
@@ -40,7 +42,8 @@ class EmbeddedGroupTest extends TestCase
         $comment = $this->mandango->create('Model\Comment');
         $group->add($comment);
         $group->setRootAndPath($article = $this->mandango->create('Model\Article'), 'comments');
-        $this->assertSame(array('root' => $article, 'path' => 'comments._add0'), $comment->getRootAndPath());
+        $this->assertEquals($article, $comment->_root);
+        $this->assertEquals('comments._add0', $comment->_path);
     }
 
     public function testAdd()
@@ -49,7 +52,8 @@ class EmbeddedGroupTest extends TestCase
         $group->setRootAndPath($article = $this->mandango->create('Model\Article'), 'comments');
         $comment = $this->mandango->create('Model\Comment');
         $group->add($comment);
-        $this->assertSame(array('root' => $article, 'path' => 'comments._add0'), $comment->getRootAndPath());
+        $this->assertEquals($article, $comment->_root);
+        $this->assertEquals('comments._add0', $comment->_path);
     }
 
     public function testSavedData()

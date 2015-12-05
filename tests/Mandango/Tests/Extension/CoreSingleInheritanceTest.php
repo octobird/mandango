@@ -112,19 +112,24 @@ class CoreSingleInheritanceTest extends TestCase
     {
         $document = $this->mandango->create('Model\TextareaFormElement')->setLabel('foo')->setDefault('bar');
         $this->assertSame(array(
-            '_id'     => null,
-            'label'   => 'foo',
-            'default' => null,
-            'default' => 'bar',
+            '_id'      => null,
+            'label'    => 'foo',
+            'source'   => null,
+            'default'  => 'bar',
+            'comments' => array()
         ), $document->toArray());
 
         $options = array('foo' => 'bar');
         $document = $this->mandango->create('Model\RadioFormElement')->setLabel('foo')->setOptions($options);
         $this->assertSame(array(
-            '_id'     => null,
-            'label'   => 'foo',
-            'default' => null,
-            'options' => $options,
+            '_id'      => null,
+            'label'    => 'foo',
+            'source'   => null,
+            'default'  => null,
+            'comments' => array(),
+            'options'  => $options,
+            'sourceLocal' => null,
+            'commentsLocal' => array()
         ), $document->toArray());
     }
 

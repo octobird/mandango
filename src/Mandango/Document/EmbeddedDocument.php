@@ -11,7 +11,6 @@
 
 namespace Mandango\Document;
 
-use Mandango\Archive;
 use Mandango\Group\EmbeddedGroup;
 
 /**
@@ -24,6 +23,20 @@ use Mandango\Group\EmbeddedGroup;
 abstract class EmbeddedDocument extends AbstractDocument
 {
     /**
+     * The root document of the document
+     * 
+     * Do not modify directly, use setRootAndPath()!
+     */
+    public $_root;
+
+    /**
+     * The path of the document relative to the root document
+     * 
+     * Do not modify directly, use setRootAndPath()!
+     */
+    public $_path;
+
+    /**
      * Set the root and path of the embedded document.
      *
      * @param \Mandango\Document\Document $root The root document.
@@ -33,7 +46,8 @@ abstract class EmbeddedDocument extends AbstractDocument
      */
     public function setRootAndPath(Document $root, $path)
     {
-        Archive::set($this, 'root_and_path', array('root' => $root, 'path' => $path));
+        $this->_root = $root;
+        $this->_path = $path;
 
         if (isset($this->data['embeddedsOne'])) {
             foreach ($this->data['embeddedsOne'] as $name => $embedded) {
@@ -43,21 +57,9 @@ abstract class EmbeddedDocument extends AbstractDocument
 
         if (isset($this->data['embeddedsMany'])) {
             foreach ($this->data['embeddedsMany'] as $name => $embedded) {
-                $embedded->setRootAndPath($root, $path.'.'.$name);
+                $embedded->setRootAndPath($root, $path . '.' . $name);
             }
         }
-    }
-
-    /**
-     * Returns the root and path of the embedded document.
-     *
-     * @return array An array with the root and path (root and path keys) or null if they do not exist.
-     *
-     * @api
-     */
-    public function getRootAndPath()
-    {
-        return Archive::getOrDefault($this, 'root_and_path', null);
     }
 
     /**
@@ -67,18 +69,18 @@ abstract class EmbeddedDocument extends AbstractDocument
      */
     public function isEmbeddedOneChangedInParent()
     {
-        if (!$rap = $this->getRootAndPath()) {
+        if (empty($this->_root)) {
             return false;
         }
 
-        if ($rap['root'] instanceof EmbeddedGroup) {
+        if ($this->_root instanceof EmbeddedGroup) {
             return false;
         }
 
-        $exPath = explode('.', $rap['path']);
+        $exPath = explode('.', $this->_path);
         unset($exPath[count($exPath) -1 ]);
 
-        $parentDocument = $rap['root'];
+        $parentDocument = $this->_root;
         foreach ($exPath as $embedded) {
             $parentDocument = $parentDocument->{'get'.ucfirst($embedded)}();
             if ($parentDocument instanceof EmbeddedGroup) {
@@ -86,8 +88,7 @@ abstract class EmbeddedDocument extends AbstractDocument
             }
         }
 
-        $rap = $this->getRootAndPath();
-        $exPath = explode('.', $rap['path']);
+        $exPath = explode('.', $this->_path);
         $name = $exPath[count($exPath) - 1];
 
         return $parentDocument->isEmbeddedOneChanged($name);
@@ -100,11 +101,11 @@ abstract class EmbeddedDocument extends AbstractDocument
      */
     public function isEmbeddedManyNew()
     {
-        if (!$rap = $this->getRootAndPath()) {
+        if (empty($this->_root)) {
             return false;
         }
 
-        return false !== strpos($rap['path'], '._add');
+        return false !== strpos($this->_path, '._add');
     }
 
     public function preInsertEvent() {}

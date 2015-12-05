@@ -17,8 +17,8 @@
             $embedded->setRootAndPath($this, '{{ name }}');
 {# embedded #}
 {% else %}
-            if ($rap = $this->getRootAndPath()) {
-                $embedded->setRootAndPath($rap['root'], $rap['path'].'.{{ name }}');
+            if ($this->_root) {
+                $embedded->setRootAndPath($this->_root, $this->_path . '.{{ name }}');
             }
 {% endif %}
         }

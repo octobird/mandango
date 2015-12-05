@@ -188,38 +188,33 @@ class RepositoryTest extends TestCase
         $identityMap = $repository->getIdentityMap();
 
         $identityMap->clear();
-        $this->assertEquals($articles[1], $article1 = $repository->findOneById($articles[1]->getId()));
-        $this->assertEquals($articles[3], $article3 = $repository->findOneById($articles[3]->getId()));
-        $this->assertSame($article1, $repository->findOneById($articles[1]->getId()));
-        $this->assertSame($article3, $repository->findOneById($articles[3]->getId()));
+        $this->assertEquals($articles[1]->toArray(), $article1 = $repository->findOneById($articles[1]->getId())->toArray());
+        $this->assertEquals($articles[3]->toArray(), $article3 = $repository->findOneById($articles[3]->getId())->toArray());
+        $this->assertEquals($article1, $repository->findOneById($articles[1]->getId())->toArray());
+        $this->assertEquals($article3, $repository->findOneById($articles[3]->getId())->toArray());
 
-        $identityMap->clear();
-        $this->assertEquals($articles[1], $article1 = $repository->findOneById($articles[1]->getId()->__toString()));
-        $this->assertEquals($articles[3], $article3 = $repository->findOneById($articles[3]->getId()->__toString()));
-        $this->assertSame($article1, $repository->findOneById($articles[1]->getId()->__toString()));
-        $this->assertSame($article3, $repository->findOneById($articles[3]->getId()->__toString()));
+        $articles1 = [];
+        foreach($repository->findById($ids1 = array($articles[1]->getId(), $articles[3]->getId(), $articles[4]->getId())) as $id => $document) {
+            $articles1[$id] = $document->toArray();
+        }
 
         $identityMap->clear();
         $this->assertEquals(array(
-            $articles[1]->getId()->__toString() => $articles[1],
-            $articles[3]->getId()->__toString() => $articles[3],
-            $articles[4]->getId()->__toString() => $articles[4],
-        ), $articles1 = $repository->findById($ids1 = array(
-            $articles[1]->getId(),
-            $articles[3]->getId(),
-            $articles[4]->getId(),
-        )));
-        $this->assertSame($articles1, $repository->findById($ids1));
+            $articles[1]->getId()->__toString() => $articles[1]->toArray(),
+            $articles[3]->getId()->__toString() => $articles[3]->toArray(),
+            $articles[4]->getId()->__toString() => $articles[4]->toArray(),
+        ), $articles1);
+
+        $articles2 = [];
+        foreach($repository->findById($ids2 = array($articles[1]->getId(), $articles[4]->getId(), $articles[7]->getId())) as $id => $document) {
+            $articles2[$id] = $document->toArray();
+        }
 
         $this->assertEquals(array(
-            $articles[1]->getId()->__toString() => $articles[1],
-            $articles[4]->getId()->__toString() => $articles[4],
-            $articles[7]->getId()->__toString() => $articles[7],
-        ), $articles2 = $repository->findById($ids2 = array(
-            $articles[1]->getId(),
-            $articles[4]->getId(),
-            $articles[7]->getId(),
-        )));
+            $articles[1]->getId()->__toString() => $articles[1]->toArray(),
+            $articles[4]->getId()->__toString() => $articles[4]->toArray(),
+            $articles[7]->getId()->__toString() => $articles[7]->toArray(),
+        ), $articles2);
         $this->assertSame($articles1[$articles[1]->getId()->__toString()], $articles2[$articles[1]->getId()->__toString()]);
         $this->assertSame($articles1[$articles[4]->getId()->__toString()], $articles2[$articles[4]->getId()->__toString()]);
     }
@@ -243,7 +238,16 @@ class RepositoryTest extends TestCase
             $articles[4]->getId(),
         ));
 
-        $this->assertEquals($articlesWithIds, $results);
+        $array1 = array();
+        foreach ($articlesWithIds as $id => $document) {
+            $array1[$id] = $document->toArray();
+        }
+        $array2 = array();
+        foreach ($results as $id => $document) {
+            $array2[$id] = $document->toArray();
+        }
+
+        $this->assertEquals($array1, $array2);
     }
 
     public function testCount()

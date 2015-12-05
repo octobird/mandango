@@ -37,12 +37,12 @@ class DocumentTest extends TestCase
         $document = new Document($this->mandango);
         $this->assertSame(array(), $document->getQueryHashes());
         $document->addQueryHash($hashes[0]);
-        $this->assertSame(array($hashes[0]), $document->getQueryHashes());
+        $this->assertSame(array($hashes[0] => 1), $document->getQueryHashes());
         $document->addQueryHash($hashes[1]);
         $document->addQueryHash($hashes[2]);
-        $this->assertSame($hashes, $document->getQueryHashes());
+        $this->assertSame(array_combine($hashes, array(1,1,1)), $document->getQueryHashes());
         $document->removeQueryHash($hashes[1]);
-        $this->assertSame(array($hashes[0], $hashes[2]), $document->getQueryHashes());
+        $this->assertSame(array($hashes[0] => 1, $hashes[2] => 1), $document->getQueryHashes());
         $document->clearQueryHashes();
         $this->assertSame(array(), $document->getQueryHashes());
     }

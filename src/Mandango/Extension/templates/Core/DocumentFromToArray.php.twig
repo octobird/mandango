@@ -105,6 +105,43 @@
 {% endif %}
 {% endif %}
 {% endfor %}
+{# references one #}
+{% for name, reference in config_class.referencesOne %}
+{% if reference.inherited is not defined or not reference.inherited %}
+        if ($withReferenceFields) {
+            $document = $this->get{{ name | ucfirst }}();
+            if (!empty($document)) {
+                $array['{{name}}'] = $document->toArray($withReferenceFields);
+            } else {
+                $array['{{name}}'] = null;
+            }
+        }
+{% endif %}
+{% endfor %}
+{# references Many #}
+{% for name, reference in config_class.referencesMany %}
+{% if reference.inherited is not defined or not reference.inherited %}
+        if ($withReferenceFields) {
+            $array['{{name}}'] = $this->get{{ name | ucfirst }}()->toArray($withReferenceFields);
+        }
+{% endif %}
+{% endfor %}
+{# embeddeds one #}
+{% for name, embedded in config_class.embeddedsOne %}
+{% if embedded.inherited is not defined or not embedded.inherited %}
+        $document = $this->get{{ name | ucfirst }}();
+        if (!empty($document)) {
+            $array['{{name}}'] = $document->toArray($withReferenceFields);
+        } else {
+            $array['{{name}}'] = null;
+        }
+{% endif %}
+{% endfor %}
+{# embeddeds many #}
+{% for name, embedded in config_class.embeddedsMany %}
+{% if embedded.inherited is not defined or not embedded.inherited %}
+        $array['{{name}}'] = $this->get{{ name | ucfirst }}()->toArray($withReferenceFields);{% endif %}
+{% endfor %}
 
         return $array;
     }

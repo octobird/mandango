@@ -20,16 +20,16 @@
         if (null !== $value) {
             if ($this instanceof \Mandango\Document\Document) {
                 $value->setRootAndPath($this, '{{ name }}');
-            } elseif ($rap = $this->getRootAndPath()) {
-                $value->setRootAndPath($rap['root'], $rap['path'].'.{{ name }}');
+            } elseif ($this->_root) {
+                $value->setRootAndPath($this->_root, $this->_path . '.{{ name }}');
             }
         }
 
-        if (!\Mandango\Archive::has($this, 'embedded_one.{{ name }}')) {
+        if (!array_key_exists('{{ name }}', $this->changedEmbeddedOnes)) {
             $originalValue = isset($this->data['embeddedsOne']['{{ name }}']) ? $this->data['embeddedsOne']['{{ name }}'] : null;
-            \Mandango\Archive::set($this, 'embedded_one.{{ name }}', $originalValue);
-        } elseif (\Mandango\Archive::get($this, 'embedded_one.{{ name }}') === $value) {
-            \Mandango\Archive::remove($this, 'embedded_one.{{ name }}');
+            $this->changedEmbeddedOnes['{{ name }}'] = $originalValue;
+        } elseif ($this->changedEmbeddedOnes['{{ name }}'] === $value) {
+            unset($this->changedEmbeddedOnes['{{ name }}']);
         }
 
         $this->data['embeddedsOne']['{{ name }}'] = $value;
@@ -64,18 +64,18 @@
             if (
                 (!isset($this->data['embeddedsOne']) || !array_key_exists('{{ name }}', $this->data['embeddedsOne']))
                 &&
-                ($rap = $this->getRootAndPath())
+                ($this->_root)
                 &&
                 !$this->isEmbeddedOneChangedInParent()
                 &&
-                false === strpos($rap['path'], '._add')
+                false === strpos($this->_path, '._add')
             ) {
-                $collection = $this->getMandango()->getRepository(get_class($rap['root']))->getCollection();
-                $field = $rap['path'].'.{{ name }}';
-                $result = $collection->findOne(array('_id' => $rap['root']->getId(), $field => array('$exists' => 1)));
+                $collection = $this->getMandango()->getRepository(get_class($this->_root))->getCollection();
+                $field = $this->_path . '.{{ name }}';
+                $result = $collection->findOne(array('_id' => $this->_root->getId(), $field => array('$exists' => 1)));
                 if ($result) {
                     $embedded = new \{{ embedded.class }}($this->getMandango());
-                    $embedded->setRootAndPath($rap['root'], $field);
+                    $embedded->setRootAndPath($this->_root, $field);
                     $this->data['embeddedsOne']['{{ name }}'] = $embedded;
                 }
             }

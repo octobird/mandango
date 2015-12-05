@@ -11,7 +11,6 @@
 
 namespace Mandango\Group;
 
-use Mandango\Archive;
 use Mandango\Document\Document;
 
 /**
@@ -23,15 +22,20 @@ use Mandango\Document\Document;
  */
 abstract class AbstractGroup implements \Countable, \IteratorAggregate
 {
+    /**
+     * Saved documents of the group
+     */
     private $saved;
 
     /**
-     * Destructor - empties the Archive cache
+     * Documents to be added to the group
      */
-    public function __destruct()
-    {
-        Archive::removeObject($this);
-    }
+    private $add = array();
+
+    /**
+     * Documents to be removed from the group
+     */
+    private $remove = array();
 
     /**
      * Adds document/s to the add queue of the group.
@@ -46,9 +50,8 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
             $documents = array($documents);
         }
 
-        $add =& Archive::getByRef($this, 'add', array());
         foreach ($documents as $document) {
-            $add[] = $document;
+            $this->add[] = $document;
         }
     }
 
@@ -59,7 +62,7 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
      */
     public function getAdd()
     {
-        return Archive::getOrDefault($this, 'add', array());
+        return $this->add;
     }
 
     /**
@@ -69,7 +72,7 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
      */
     public function clearAdd()
     {
-        Archive::remove($this, 'add');
+        $this->add = array();
     }
 
     /**
@@ -85,9 +88,8 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
             $documents = array($documents);
         }
 
-        $remove =& Archive::getByRef($this, 'remove', array());
         foreach ($documents as $document) {
-            $remove[] = $document;
+            $this->remove[] = $document;
         }
     }
 
@@ -98,7 +100,7 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
      */
     public function getRemove()
     {
-        return Archive::getOrDefault($this, 'remove', array());
+        return $this->remove;
     }
 
     /**
@@ -108,7 +110,7 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
      */
     public function clearRemove()
     {
-        Archive::remove($this, 'remove');
+        $this->remove = array();
     }
 
     /**
@@ -139,6 +141,18 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
         }
 
         return array_values($documents);
+    }
+
+    /**
+     * Returns an array of arrays representing the contained documents
+     */
+    public function toArray($withReferenceFields = false)
+    {
+        $arrays = array();
+        foreach ($this->all() as $document) {
+            $arrays[] = $document->toArray($withReferenceFields);
+        }
+        return $arrays;
     }
 
     /**

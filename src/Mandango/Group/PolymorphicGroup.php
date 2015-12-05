@@ -11,8 +11,6 @@
 
 namespace Mandango\Group;
 
-use Mandango\Archive;
-
 /**
  * PolymorphicGroup.
  *
@@ -22,6 +20,8 @@ use Mandango\Archive;
  */
 abstract class PolymorphicGroup extends AbstractGroup
 {
+    private $discriminatorField;
+
     /**
      * Constructor.
      *
@@ -31,7 +31,7 @@ abstract class PolymorphicGroup extends AbstractGroup
      */
     public function __construct($discriminatorField)
     {
-        Archive::set($this, 'discriminatorField', $discriminatorField);
+        $this->discriminatorField = $discriminatorField;
     }
 
     /**
@@ -43,6 +43,6 @@ abstract class PolymorphicGroup extends AbstractGroup
      */
     public function getDiscriminatorField()
     {
-        return Archive::get($this, 'discriminatorField');
+        return $this->discriminatorField;
     }
 }

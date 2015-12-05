@@ -14,7 +14,6 @@ namespace Mandango\Tests;
 use Mandango\Cache\ArrayCache;
 use Mandango\Connection;
 use Mandango\Mandango;
-use Mandango\Archive;
 use Mandango\Id\IdGeneratorContainer;
 use Mandango\Type\Container as TypeContainer;
 
@@ -77,7 +76,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
     protected function tearDown()
     {
-        Archive::clear();
         IdGeneratorContainer::reset();
         TypeContainer::reset();
     }

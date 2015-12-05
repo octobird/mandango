@@ -11,7 +11,6 @@
 
 namespace Mandango\Document;
 
-use Mandango\Archive;
 use Mandango\Mandango;
 
 /**
@@ -27,6 +26,7 @@ abstract class AbstractDocument
 
     protected $data = array();
     protected $fieldsModified = array();
+    protected $changedEmbeddedOnes = array();
 
     /**
      * Constructor.
@@ -36,14 +36,6 @@ abstract class AbstractDocument
     public function __construct(Mandango $mandango)
     {
         $this->mandango = $mandango;
-    }
-
-    /**
-     * Destructor - empties the Archive cache
-     */
-    public function __destruct()
-    {
-        Archive::removeObject($this);
     }
 
     /**
@@ -102,8 +94,8 @@ abstract class AbstractDocument
                     $root = null;
                     if ($this instanceof Document) {
                         $root = $this;
-                    } elseif ($rap = $this->getRootAndPath()) {
-                        $root = $rap['root'];
+                    } elseif ($this->_root) {
+                        $root = $this->_root;
                     }
                     if ($root && !$root->isNew()) {
                         return true;
@@ -122,8 +114,8 @@ abstract class AbstractDocument
                 $root = null;
                 if ($this instanceof Document) {
                     $root = $this;
-                } elseif ($rap = $this->getRootAndPath()) {
-                    $root = $rap['root'];
+                } elseif ($this->_root) {
+                    $root = $this->_root;
                 }
                 if ($root && !$root->isNew()) {
                     if ($group->getRemove()) {
@@ -249,7 +241,7 @@ abstract class AbstractDocument
             return false;
         }
 
-        return Archive::has($this, 'embedded_one.'.$name);
+        return array_key_exists($name, $this->changedEmbeddedOnes);
     }
 
     /**
@@ -263,8 +255,8 @@ abstract class AbstractDocument
      */
     public function getOriginalEmbeddedOneValue($name)
     {
-        if (Archive::has($this, 'embedded_one.'.$name)) {
-            return Archive::get($this, 'embedded_one.'.$name);
+        if (array_key_exists($name, $this->changedEmbeddedOnes)) {
+            return $this->changedEmbeddedOnes[$name];
         }
 
         if (isset($this->data['embeddedsOne'][$name])) {
@@ -304,7 +296,7 @@ abstract class AbstractDocument
     {
         if (isset($this->data['embeddedsOne'])) {
             foreach ($this->data['embeddedsOne'] as $name => $embedded) {
-                Archive::remove($this, 'embedded_one.'.$name);
+                unset($this->changedEmbeddedOnes[$name]);
             }
         }
     }

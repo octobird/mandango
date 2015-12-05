@@ -12,7 +12,7 @@
     {
         if (!isset($this->data['fields']['{{ name }}'])) {
 {% if config_class.isEmbedded %}
-            if (($rap = $this->getRootAndPath()) && !$rap['root']->isNew()) {
+            if (($this->_root) && !$this->_root->isNew()) {
 {% else %}
             if (!$this->isNew()) {
 {% endif %}
@@ -55,13 +55,13 @@
             if (
                 (!isset($this->data['fields']) || !array_key_exists('{{ name }}', $this->data['fields']))
                 &&
-                ($rap = $this->getRootAndPath())
+                ($this->_root)
                 &&
                 !$this->isEmbeddedOneChangedInParent()
                 &&
                 !$this->isEmbeddedManyNew()
             ) {
-                $field = $rap['path'].'.{{ field.dbName }}';
+                $field = $this->_path . '.{{ field.dbName }}';
 
                 /* TODO
                  * 
@@ -85,10 +85,11 @@
                 }
                 $path = implode('.', $path);
 
-                $rap['root']->addFieldCache($path);
+                $this->_root->addFieldCache($path);
 
-                $collection = $this->getMandango()->getRepository(get_class($rap['root']))->getCollection();
-                $data = $collection->findOne(array('_id' => $rap['root']->getId()), array($field => 1));
+                // TODO: a document should be able to return it's collection and collection (shouldn't it?)
+                $collection = $this->getMandango()->getRepository(get_class($this->_root))->getCollection();
+                $data = $collection->findOne(array('_id' => $this->_root->getId()), array($field => 1));
                 foreach (explode('.', $field) as $key) {
                     if (!isset($data[$key])) {
                         $data = null;

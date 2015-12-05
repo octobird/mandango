@@ -11,7 +11,6 @@
 
 namespace Mandango\Group;
 
-use Mandango\Archive;
 use Mandango\Document\Document;
 
 /**
@@ -24,6 +23,25 @@ use Mandango\Document\Document;
 class EmbeddedGroup extends Group
 {
     /**
+     * The root document of the group
+     * 
+     * Do not modify directly, use setRootAndPath()!
+     */
+    public $_root;
+
+    /**
+     * The path of the group relative to the root document
+     * 
+     * Do not modify directly, use setRootAndPath()!
+     */
+    public $_path;
+
+    /**
+     * 
+     */
+    protected $_saved_data;
+
+    /**
      * Set the root and path of the embedded group.
      *
      * @param \Mandango\Document\Document $root The root document.
@@ -33,21 +51,12 @@ class EmbeddedGroup extends Group
      */
     public function setRootAndPath(Document $root, $path)
     {
-        Archive::set($this, 'root_and_path', array('root' => $root, 'path' => $path));
+        $this->_root = $root;
+        $this->_path = $path;
 
         foreach ($this->getAdd() as $key => $document) {
-            $document->setRootAndPath($root, $path.'._add'.$key);
+            $document->setRootAndPath($this->_root, $this->_path . '._add' . $key);
         }
-    }
-
-    /**
-     * Returns the root and the path.
-     *
-     * @api
-     */
-    public function getRootAndPath()
-    {
-        return Archive::getOrDefault($this, 'root_and_path', null);
     }
 
     /**
@@ -57,9 +66,9 @@ class EmbeddedGroup extends Group
     {
         parent::add($documents);
 
-        if ($rap = $this->getRootAndPath()) {
+        if ($this->_root) {
             foreach ($this->getAdd() as $key => $document) {
-                $document->setRootAndPath($rap['root'], $rap['path'].'._add'.$key);
+                $document->setRootAndPath($this->_root, $this->_path . '._add' . $key);
             }
         }
     }
@@ -71,7 +80,7 @@ class EmbeddedGroup extends Group
      */
     public function setSavedData(array $data)
     {
-        Archive::set($this, 'saved_data', $data);
+        $this->_saved_data = $data;
     }
 
     /**
@@ -81,7 +90,7 @@ class EmbeddedGroup extends Group
      */
     public function getSavedData()
     {
-        return Archive::getOrDefault($this, 'saved_data', null);
+        return  $this->_saved_data;
     }
 
     /**
@@ -89,20 +98,17 @@ class EmbeddedGroup extends Group
      */
     protected function doInitializeSavedData()
     {
-        $data = $this->getSavedData();
-        if ($data !== null) {
-            return $data;
+        if ($this->_saved_data !== null) {
+            return $this->_saved_data;
         }
 
-        $rap = $this->getRootAndPath();
-
-        if ($rap['root']->isNew()) {
+        if (empty($this->_root) || $this->_root->isNew()) {
             return array();
         }
 
         /* TODO
          * 
-         * Suboptimal workaround to query cache bug with EmbeddedGroup:
+         * Suboptimal workaround to field cache bug with EmbeddedGroup:
          * only add path until the first numeric element, but not that element.
          * 
          * Example:
@@ -114,7 +120,7 @@ class EmbeddedGroup extends Group
          * arrays.
          */
         $path = [];
-        foreach (explode('.', $rap['path']) as $e) {
+        foreach (explode('.', $this->_path) as $e) {
             if (is_numeric($e)) {
                 break;
             }
@@ -122,15 +128,15 @@ class EmbeddedGroup extends Group
         }
         $path = implode('.', $path);
 
-        $rap['root']->addFieldCache($path);
+        $this->_root->addFieldCache($path);
 
-        $result = $rap['root']
+        $result = $this
+            ->_root
             ->getRepository()
             ->getCollection()
-            ->findOne(array('_id' => $rap['root']->getId()), array($rap['path'] => true))
-        ;
+            ->findOne(array('_id' => $this->_root->getId()), array($this->_path => true));
 
-        return ($result && isset($result[$rap['path']])) ? $result[$rap['path']] : array();
+        return ($result && isset($result[$this->_path])) ? $result[$this->_path] : array();
     }
 
     /**
@@ -138,15 +144,18 @@ class EmbeddedGroup extends Group
      */
     protected function doInitializeSaved(array $data)
     {
+        if (empty($this->_root)) {
+            return array();
+        }
+
         $documentClass = $this->getDocumentClass();
-        $rap = $this->getRootAndPath();
-        $mandango = $rap['root']->getMandango();
+        $mandango = $this->_root->getMandango();
 
         $saved = array();
         foreach ($data as $key => $datum) {
             $saved[] = $document = new $documentClass($mandango);
             $document->setDocumentData($datum);
-            $document->setRootAndPath($rap['root'], $rap['path'].'.'.$key);
+            $document->setRootAndPath($this->_root, $this->_path . '.' . $key);
         }
 
         return $saved;

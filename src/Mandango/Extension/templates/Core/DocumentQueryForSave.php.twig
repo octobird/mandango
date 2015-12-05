@@ -29,13 +29,12 @@
 {% if config_class.isEmbedded %}
                 $rootQuery = $query;
                 $query =& $rootQuery;
-                $rap = $this->getRootAndPath();
                 if (true === $reset) {
-                    $path = array('$set', $rap['path']);
+                    $path = array('$set', $this->_path);
                 } elseif ('deep' == $reset) {
-                    $path = explode('.', '$set.'.$rap['path']);
+                    $path = explode('.', '$set.'.$this->_path);
                 } else {
-                    $path = explode('.', $rap['path']);
+                    $path = explode('.', $this->_path);
                 }
                 foreach ($path as $name) {
                     if (0 === strpos($name, '_add')) {
@@ -60,10 +59,6 @@
 {% endif %}
 {# update #}
             } else {
-{% if config_class.isEmbedded %}
-                $rap = $this->getRootAndPath();
-                $documentPath = $rap['path'];
-{% endif %}
 {% for name, field in config_class.fields %}
 {% if field.inherited is not defined or not field.inherited %}
                 if (isset($this->data['fields']['{{ name }}']) || array_key_exists('{{ name }}', $this->data['fields'])) {
@@ -74,13 +69,13 @@
 {% if not config_class.isEmbedded %}
                             {{ mandango_type_to_mongo(field.type, "$this->data['fields']['" ~ name ~ "']", "$query['$set']['" ~ field.dbName ~ "']") }}
 {% else %}
-                            {{ mandango_type_to_mongo(field.type, "$this->data['fields']['" ~ name ~ "']", "$query['$set'][$documentPath.'." ~ field.dbName ~ "']") }}
+                            {{ mandango_type_to_mongo(field.type, "$this->data['fields']['" ~ name ~ "']", "$query['$set'][$this->_path.'." ~ field.dbName ~ "']") }}
 {% endif %}
                         } else {
 {% if not config_class.isEmbedded %}
                             $query['$unset']['{{ field.dbName }}'] = 1;
 {% else %}
-                            $query['$unset'][$documentPath.'.{{ field.dbName }}'] = 1;
+                            $query['$unset'][$this->_path.'.{{ field.dbName }}'] = 1;
 {% endif %}
                         }
                     }
@@ -104,8 +99,7 @@
                 $query = $this->data['embeddedsOne']['{{ name }}']->queryForSave($query, $isNew, $resetValue);
             } elseif (array_key_exists('{{ name }}', $this->data['embeddedsOne'])) {
                 if ($originalValue) {
-                    $rap = $originalValue->getRootAndPath();
-                    $query['$unset'][$rap['path']] = 1;
+                    $query['$unset'][$originalValue->_path] = 1;
                 }
             }
 {% endif %}
@@ -133,21 +127,19 @@
                     foreach ($group->getSaved() as $document) {
                         $query = $document->queryForSave($query, $isNew);
                     }
-                    $groupRap = $group->getRootAndPath();
                     foreach ($group->getAdd() as $document) {
                         $q = $document->queryForSave(array(), true);
-                        $rap = $document->getRootAndPath();
-                        foreach (explode('.', $rap['path']) as $name) {
+                        // TODO: use a flag on the document instead, this makes me puke.
+                        foreach (explode('.', $document->_path) as $name) {
                             if (0 === strpos($name, '_add')) {
                                 $name = substr($name, 4);
                             }
                             $q = $q[$name];
                         }
-                        $query['$pushAll'][$groupRap['path']][] = $q;
+                        $query['$pushAll'][$group->_path][] = $q;
                     }
                     foreach ($group->getRemove() as $document) {
-                        $rap = $document->getRootAndPath();
-                        $query['$unset'][$rap['path']] = 1;
+                        $query['$unset'][$document->_path] = 1;
                     }
                 }
 {% endif %}

@@ -11,8 +11,6 @@
 
 namespace Mandango\Group;
 
-use Mandango\Archive;
-
 /**
  * PolymorphicReferenceGroup.
  *
@@ -22,6 +20,10 @@ use Mandango\Archive;
  */
 class PolymorphicReferenceGroup extends PolymorphicGroup
 {
+    private $parent;
+    private $field;
+    private $discriminatorMap;
+
     /**
      * Constructor.
      *
@@ -36,9 +38,9 @@ class PolymorphicReferenceGroup extends PolymorphicGroup
     {
         parent::__construct($discriminatorField);
 
-        Archive::set($this, 'parent', $parent);
-        Archive::set($this, 'field', $field);
-        Archive::set($this, 'discriminatorMap', $discriminatorMap);
+        $this->parent = $parent;
+        $this->field  = $field;
+        $this->discriminatorMap = $discriminatorMap;
     }
 
     /**
@@ -50,7 +52,7 @@ class PolymorphicReferenceGroup extends PolymorphicGroup
      */
     public function getParent()
     {
-        return Archive::get($this, 'parent');
+        return $this->parent;
     }
 
     /**
@@ -62,7 +64,7 @@ class PolymorphicReferenceGroup extends PolymorphicGroup
      */
     public function getField()
     {
-        return Archive::get($this, 'field');
+        return $this->field;
     }
 
     /**
@@ -74,7 +76,7 @@ class PolymorphicReferenceGroup extends PolymorphicGroup
      */
     public function getDiscriminatorMap()
     {
-        return Archive::get($this, 'discriminatorMap');
+        return $this->discriminatorMap;
     }
 
     /**

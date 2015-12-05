@@ -11,7 +11,6 @@
 
 namespace Mandango\Group;
 
-use Mandango\Archive;
 use Mandango\Document\Document;
 
 /**
@@ -23,6 +22,8 @@ use Mandango\Document\Document;
  */
 abstract class Group extends AbstractGroup
 {
+    private $documentClass;
+
     /**
      * Constructor.
      *
@@ -32,7 +33,7 @@ abstract class Group extends AbstractGroup
      */
     public function __construct($documentClass)
     {
-        Archive::set($this, 'document_class', $documentClass);
+        $this->documentClass = $documentClass;
     }
 
     /**
@@ -42,6 +43,6 @@ abstract class Group extends AbstractGroup
      */
     public function getDocumentClass()
     {
-        return Archive::get($this, 'document_class');
+        return $this->documentClass;
     }
 }

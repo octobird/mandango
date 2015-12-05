@@ -377,12 +377,14 @@ class CoreDocumentTest extends TestCase
         $source = $this->mandango->create('Model\Source');
         $this->assertSame($article, $article->setSource($source));
         $this->assertSame($source, $article->getSource());
-        $this->assertSame(array('root' => $article, 'path' => 'source'), $source->getRootAndPath());
+        $this->assertEquals($article, $source->_root);
+        $this->assertEquals('source', $source->_path);
 
         $source2 = $this->mandango->create('Model\Source');
         $article->setSource($source2);
         $this->assertSame($source2, $article->getSource());
-        $this->assertSame(array('root' => $article, 'path' => 'source'), $source2->getRootAndPath());
+        $this->assertEquals($article, $source2->_root);
+        $this->assertEquals('source', $source2->_path);
     }
 
     public function testEmbeddedsOneSettersGettersDeep1()
@@ -393,8 +395,11 @@ class CoreDocumentTest extends TestCase
         $info = $this->mandango->create('Model\Info');
         $source->setInfo($info);
 
-        $this->assertSame(array('root' => $article, 'path' => 'source'), $source->getRootAndPath());
-        $this->assertSame(array('root' => $article, 'path' => 'source.info'), $info->getRootAndPath());
+        $this->assertEquals($article, $source->_root);
+        $this->assertEquals('source', $source->_path);
+
+        $this->assertEquals($article, $info->_root);
+        $this->assertEquals('source.info', $info->_path);
     }
 
     public function testEmbeddedsOneSettersGettersDeep2()
@@ -402,12 +407,15 @@ class CoreDocumentTest extends TestCase
         $info = $this->mandango->create('Model\Info');
         $source = $this->mandango->create('Model\Source');
         $source->setInfo($info);
-        $this->assertNull($info->getRootAndPath());
+        $this->assertNull($info->_root);
         $article = $this->mandango->create('Model\Article');
         $article->setSource($source);
 
-        $this->assertSame(array('root' => $article, 'path' => 'source'), $source->getRootAndPath());
-        $this->assertSame(array('root' => $article, 'path' => 'source.info'), $info->getRootAndPath());
+        $this->assertEquals($article, $source->_root);
+        $this->assertEquals('source', $source->_path);
+
+        $this->assertEquals($article, $info->_root);
+        $this->assertEquals('source.info', $info->_path);
     }
 
     public function testEmbeddedsOneGettersQueryValueIfItDoesNotExistInNotNewDocuments()
@@ -887,6 +895,9 @@ class CoreDocumentTest extends TestCase
             'isActive' => false,
             'date'     => null,
             'database' => null,
+            'source'   => null,
+            'simpleEmbedded' => null,
+            'comments' => array()
         ), $article->toArray());
     }
 
@@ -911,6 +922,9 @@ class CoreDocumentTest extends TestCase
             'isActive' => false,
             'date'     => null,
             'database' => null,
+            'source'   => null,
+            'simpleEmbedded' => null,
+            'comments' => array()
         ), $article->toArray());
     }
 
@@ -924,7 +938,8 @@ class CoreDocumentTest extends TestCase
             'text' => null,
             'note' => null,
             'line' => null,
-            'from' => null
+            'from' => null,
+            'info' => null
         ), $source->toArray());
     }
 
@@ -1128,11 +1143,15 @@ class CoreDocumentTest extends TestCase
         $article2 = $this->mandango->create('Model\Article');
 
         $source = $this->mandango->create('Model\Source');
-        $this->assertNull($source->getRootAndPath());
+        $this->assertNull($source->_root);
+
         $source->setRootAndPath($article1, 'source');
-        $this->assertSame(array('root' => $article1, 'path' => 'source'), $source->getRootAndPath());
+        $this->assertEquals($article1, $source->_root);
+        $this->assertEquals('source', $source->_path);
+
         $source->setRootAndPath($article2, 'fuente');
-        $this->assertSame(array('root' => $article2, 'path' => 'fuente'), $source->getRootAndPath());
+        $this->assertEquals($article2, $source->_root);
+        $this->assertEquals('fuente', $source->_path);
     }
 
     public function testRootAndPathEmbeddedsOne()
@@ -1143,8 +1162,11 @@ class CoreDocumentTest extends TestCase
         $article = $this->mandango->create('Model\Article');
         $article->setSource($source);
 
-        $this->assertSame(array('root' => $article, 'path' => 'source'), $source->getRootAndPath());
-        $this->assertSame(array('root' => $article, 'path' => 'source.info'), $info->getRootAndPath());
+        $this->assertEquals($article, $source->_root);
+        $this->assertEquals('source', $source->_path);
+
+        $this->assertEquals($article, $info->_root);
+        $this->assertEquals('source.info', $info->_path);
     }
 
     public function testRootAndPathEmbeddedsMany()
@@ -1155,13 +1177,17 @@ class CoreDocumentTest extends TestCase
         $article = $this->mandango->create('Model\Article');
         $article->getComments()->add($comment);
 
-        $this->assertSame(array('root' => $article, 'path' => 'comments'), $article->getComments()->getRootAndPath());
-        $rap = $comment->getRootAndPath();
-        $this->assertSame($article, $rap['root']);
-        $this->assertSame('comments._add0', $rap['path']);
-        $rap = $info->getRootAndPath();
-        $this->assertSame($article, $rap['root']);
-        $this->assertSame('comments._add0.infos._add0', $rap['path']);
+        $this->assertEquals($article, $article->getComments()->_root);
+        $this->assertEquals('comments', $article->getComments()->_path);
+
+        $this->assertSame($article, $comment->_root);
+        $this->assertSame('comments._add0', $comment->_path);
+
+        $this->assertSame($article, $comment->getInfos()->_root);
+        $this->assertSame('comments._add0.infos', $comment->getInfos()->_path);
+
+        $this->assertSame($article, $info->_root);
+        $this->assertSame('comments._add0.infos._add0', $info->_path);
     }
 
     public function testDebug()
@@ -1185,7 +1211,7 @@ class CoreDocumentTest extends TestCase
         )));
 
         $this->assertSame($id, $article->getId());
-        $this->assertSame(array($queryHash), $article->getQueryHashes());
+        $this->assertSame(array($queryHash => 1), $article->getQueryHashes());
         $this->assertSame('foo', $article->getTitle());
         $this->assertTrue($article->getIsActive());
     }
@@ -1253,11 +1279,17 @@ class CoreDocumentTest extends TestCase
         ));
 
         $source = $article->getSource();
-        $this->assertEquals($this->mandango->create('Model\Source')->setDocumentData($sourceData), $source);
-        $this->assertSame(array('root' => $article, 'path' => 'source'), $source->getRootAndPath());
-        $info = $source->getInfo();
-        $this->assertEquals($this->mandango->create('Model\Info')->setDocumentData($infoData), $info);
-        $this->assertSame(array('root' => $article, 'path' => 'source.info'), $info->getRootAndPath());
+        $this->assertEquals(123, $source->getName());
+        $this->assertEquals(234, $source->getInfo()->getName());
+
+        $this->assertEquals($article, $source->_root);
+        $this->assertEquals('source', $source->_path);
+
+        $info  = $source->getInfo();
+        $info2 = $this->mandango->create('Model\Info')->setDocumentData($infoData);
+        $this->assertEquals($info2->getName(), $info->getName());
+        $this->assertEquals($article, $info->_root);
+        $this->assertEquals('source.info', $info->_path);
     }
 
     public function testSetDocumentDataEmbeddedsMany()
@@ -1276,21 +1308,23 @@ class CoreDocumentTest extends TestCase
         ));
 
         $comments = $article->getComments();
-        $this->assertEquals(new EmbeddedGroup('Model\Comment', $commentsData), $comments);
-        $this->assertSame(array('root' => $article, 'path' => 'comments'), $comments->getRootAndPath());
+        $this->assertEquals(2, count($comments->all()));
+        $this->assertEquals($article, $comments->_root);
+        $this->assertEquals('comments', $comments->_path);
         $savedComments = $comments->getSaved();
-        $this->assertSame(2, count($savedComments));
-        $this->assertEquals($this->mandango->create('Model\Comment')->setDocumentData($commentsData[0]), $savedComments[0]);
-        $this->assertEquals($this->mandango->create('Model\Comment')->setDocumentData($commentsData[1]), $savedComments[1]);
+        $this->assertEquals(2, count($savedComments));
+        $this->assertEquals('upsfoo', $savedComments[0]->getText());
+        $this->assertEquals('mon', $savedComments[1]->getText());
 
         $this->assertSame(0, $savedComments[0]->getInfos()->count());
         $infos = $savedComments[1]->getInfos();
-        $this->assertEquals(new EmbeddedGroup('Model\Info', $infosData), $infos);
-        $this->assertSame(array('root' => $article, 'path' => 'comments.1.infos'), $infos->getRootAndPath());
+        $this->assertEquals(2, count($infos->all()));
+        $this->assertEquals($article, $infos->_root);
+        $this->assertEquals('comments.1.infos', $infos->_path);
         $savedInfos = $infos->getSaved();
         $this->assertSame(2, count($savedComments));
-        $this->assertEquals($this->mandango->create('Model\Info')->setDocumentData($infosData[0]), $savedInfos[0]);
-        $this->assertEquals($this->mandango->create('Model\Info')->setDocumentData($infosData[1]), $savedInfos[1]);
+        $this->assertEquals('foo', $savedInfos[0]->getName());
+        $this->assertEquals('bar', $savedInfos[1]->getName());
     }
 
     /*

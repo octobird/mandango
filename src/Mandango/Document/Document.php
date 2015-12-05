@@ -11,8 +11,6 @@
 
 namespace Mandango\Document;
 
-use Mandango\Archive;
-
 /**
  * The base class for documents.
  *
@@ -24,6 +22,7 @@ abstract class Document extends AbstractDocument
 {
     private $isNew = true;
     private $id;
+    private $queryHashes = array();
 
     /**
      * Returns the repository.
@@ -152,8 +151,7 @@ abstract class Document extends AbstractDocument
      */
     public function addQueryHash($hash)
     {
-        $queryHashes =& Archive::getByRef($this, 'query_hashes', array());
-        $queryHashes[] = $hash;
+        $this->queryHashes[$hash] = 1;
     }
 
     /**
@@ -163,7 +161,7 @@ abstract class Document extends AbstractDocument
      */
     public function getQueryHashes()
     {
-        return Archive::getOrDefault($this, 'query_hashes', array());
+        return $this->queryHashes;
     }
 
     /**
@@ -173,9 +171,7 @@ abstract class Document extends AbstractDocument
      */
     public function removeQueryHash($hash)
     {
-        $queryHashes =& Archive::getByRef($this, 'query_hashes', array());
-        unset($queryHashes[array_search($hash, $queryHashes)]);
-        $queryHashes = array_values($queryHashes);
+        unset($this->queryHashes[$hash]);
     }
 
     /**
@@ -183,7 +179,7 @@ abstract class Document extends AbstractDocument
      */
     public function clearQueryHashes()
     {
-        Archive::remove($this, 'query_hashes');
+        $this->queryHashes = array();
     }
 
     /**
@@ -193,7 +189,7 @@ abstract class Document extends AbstractDocument
     {
         $cache = $this->getMandango()->getCache();
 
-        foreach ($this->getQueryHashes() as $hash) {
+        foreach ($this->getQueryHashes() as $hash => $_) {
             $value = $cache->has($hash) ? $cache->get($hash) : array();
             $value['fields'][$field] = 1;
             $cache->set($hash, $value);
@@ -207,7 +203,7 @@ abstract class Document extends AbstractDocument
     {
         $cache = $this->getMandango()->getCache();
 
-        foreach ($this->getQueryHashes() as $hash) {
+        foreach ($this->getQueryHashes() as $hash => $_) {
             $value = $cache->has($hash) ? $cache->get($hash) : array();
             if (!isset($value['references']) || !in_array($reference, $value['references'])) {
                 $value['references'][] = $reference;

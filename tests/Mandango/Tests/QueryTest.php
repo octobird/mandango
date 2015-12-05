@@ -316,18 +316,21 @@ class QueryTest extends TestCase
         }
 
         $articles = $this->query->all();
-        $this->assertEquals($baseArticles, $articles);
+        $this->assertEquals(count($baseArticles), count($articles));
+        foreach ($articles as $key => $article) {
+            $this->assertEquals($article->toArray(), $baseArticles[$key]->toArray());
+        }
 
         foreach ($articles as $article) {
             $this->assertTrue($this->identityMap->has($article->getId()));
-            $this->assertSame(array($this->query->getHash()), $article->getQueryHashes());
+            $this->assertSame(array($this->query->getHash() => 1), $article->getQueryHashes());
         }
 
         $query = new \Model\ArticleQuery($this->mandango->getRepository('Model\Article'));
         $articles2 = $query->all();
         foreach ($articles2 as $key => $article2) {
             $this->assertSame($article2, $articles[$key]);
-            $this->assertSame(array($this->query->getHash(), $query->getHash()), $article2->getQueryHashes());
+            $this->assertSame(array($this->query->getHash() => 1, $query->getHash() => 1), $article2->getQueryHashes());
         }
     }
 
@@ -512,7 +515,16 @@ class QueryTest extends TestCase
             $this->assertFalse($this->identityMap->has($article->getId()));
         }
 
-        $this->assertEquals($articles, iterator_to_array($this->query));
+        $queryArray = array();
+        foreach (iterator_to_array($this->query) as $key => $document) {
+            $queryArray[$key] = $document->toArray();
+        }
+        $articleArray = array();
+        foreach ($articles as $key => $document) {
+            $articleArray[$key] = $document->toArray();
+        }
+        
+        $this->assertEquals($queryArray, $articleArray);
 
         foreach ($articles as $article) {
             $this->assertTrue($this->identityMap->has($article->getId()));
@@ -528,7 +540,7 @@ class QueryTest extends TestCase
         }
 
         $articleOne = array_shift($articles);
-        $this->assertEquals($articleOne, $this->query->one());
+        $this->assertEquals($articleOne->toArray(), $this->query->one()->toArray());
 
         $this->assertTrue($this->identityMap->has($articleOne->getId()));
         foreach ($articles as $article) {

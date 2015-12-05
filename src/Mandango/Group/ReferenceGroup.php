@@ -11,8 +11,6 @@
 
 namespace Mandango\Group;
 
-use Mandango\Archive;
-
 /**
  * ReferenceGroup.
  *
@@ -22,6 +20,9 @@ use Mandango\Archive;
  */
 class ReferenceGroup extends Group
 {
+    private $parent;
+    private $field;
+
     /**
      * Constructor.
      *
@@ -35,8 +36,8 @@ class ReferenceGroup extends Group
     {
         parent::__construct($documentClass);
 
-        Archive::set($this, 'parent', $parent);
-        Archive::set($this, 'field', $field);
+        $this->parent = $parent;
+        $this->field  = $field;
     }
 
     /**
@@ -48,7 +49,7 @@ class ReferenceGroup extends Group
      */
     public function getParent()
     {
-        return Archive::get($this, 'parent');
+        return $this->parent;
     }
 
     /**
@@ -60,7 +61,7 @@ class ReferenceGroup extends Group
      */
     public function getField()
     {
-        return Archive::get($this, 'field');
+        return $this->field;
     }
 
     /**
