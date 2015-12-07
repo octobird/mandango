@@ -144,10 +144,6 @@ class EmbeddedGroup extends Group
      */
     protected function doInitializeSaved(array $data)
     {
-        if (empty($this->_root)) {
-            return array();
-        }
-
         $documentClass = $this->getDocumentClass();
         $mandango = $this->_root->getMandango();
 
