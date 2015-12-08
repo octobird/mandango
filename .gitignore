@@ -1,8 +1,0 @@
-package.xml
-composer.phar
-composer.lock
-/tests/model_no_namespaced/Base/
-/tests/Model/Base/
-/tests/Model/Mapping/
-/vendor/
-BUILD
