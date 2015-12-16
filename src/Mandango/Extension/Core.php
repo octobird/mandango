@@ -182,7 +182,7 @@ class Core extends Extension
         if (!isset($this->configClass['inheritable'])) {
             $this->configClass['inheritable'] = false;
         } elseif ($this->configClass['isEmbedded']) {
-            throw new \RuntimeException(sprintf('Using unheritance in a embedded document "%s".', $this->class));
+            throw new \RuntimeException(sprintf('Using inheritance in a embedded document "%s".', $this->class));
         }
     }
 
@@ -191,7 +191,7 @@ class Core extends Extension
         if (!isset($this->configClass['inheritance'])) {
             $this->configClass['inheritance'] = false;
         } elseif ($this->configClass['isEmbedded']) {
-            throw new \RuntimeException(sprintf('Using unheritance in a embedded document "%s".', $this->class));
+            throw new \RuntimeException(sprintf('Using inheritance in a embedded document "%s".', $this->class));
         }
     }
 
@@ -840,33 +840,6 @@ EOF
         }
     }
 
-    private function globalHasReferencesProcess()
-    {
-        do {
-             $continue = false;
-             foreach ($this->configClasses as $class => $configClass) {
-                 if (isset($configClass['_has_references'])) {
-                     continue;
-                 }
-
-                 $hasReferences = false;
-                 if ($configClass['referencesOne'] || $configClass['referencesMany']) {
-                     $hasReferences = true;
-                 }
-                 foreach (array_merge($configClass['embeddedsOne'], $configClass['embeddedsMany']) as $name => $embedded) {
-                     if (!isset($this->configClasses[$embedded['class']]['_has_references'])) {
-                         $continue = true;
-                         continue 2;
-                     }
-                     if ($this->configClasses[$embedded['class']]['_has_references']) {
-                         $hasReferences = true;
-                     }
-                 }
-                 $configClass['_has_references'] = $hasReferences;
-             }
-         } while ($continue);
-    }
-
     private function globalOnDeleteProcess()
     {
         foreach ($this->configClasses as $class => $configClass) {
@@ -910,62 +883,123 @@ EOF
         }
     }
 
+    /**
+     * Determine the value of a property with respect to a configClass and it's
+     * embeddeds
+     * 
+     * The method checks if the property of the config class already set up. If
+     * it is, it just returns the property value.
+     * 
+     * If the property is not set up and the $getter closure is given, it runs
+     * it with the $configClass and puts the result into the result array.
+     * 
+     * It than calls itself on all embedded config classes, and puts the
+     * returned values into the result array too.
+     *
+     * If the $aggregator is not given or it's null, it puts the $getter's
+     * result of the config class into the head position of the array of
+     * embedded results and returs the resulting array.
+     *
+     * If the $aggregator is present, it's run against the result array, and
+     * it's result is set as the property value, and then returned. If not, the
+     * result array is set as the property value and than returned.
+     *
+     * During recursive processing, it skips self-embeds to prevent infinite
+     * loops.
+     *
+     * The _has_references, _has_groups, and _indexes properties are computed
+     * using this logic.
+     */
+    private function embeddedRecursivePropertyProcess($propertyName, $configClassName, $configClass, $getter, $aggregator)
+    {
+        if (array_key_exists($propertyName, $configClass)) {
+            return $configClass[$propertyName];
+        }
+
+        $result = empty($getter) ? null : $getter($configClass);
+
+        $embeddedResults = [];
+        foreach (array_merge(
+            array_key_exists('embeddedsOne', $configClass) ? $configClass['embeddedsOne'] : [],
+            array_key_exists('embeddedsMany', $configClass) ? $configClass['embeddedsMany'] : []
+        ) as $embeddedName => $embedded) {
+            // TODO: fix large diameter loops too
+            if ($embedded['class'] == $configClassName) continue; // Skip self-embeds
+            $embeddedResults[$embeddedName] = $this->embeddedRecursivePropertyProcess($propertyName, $embeddedName, $embedded, $getter, $aggregator);
+        }
+
+        return $configClass[$propertyName] = $aggregator($configClassName, $result, $embeddedResults);
+    }
+
+    private function globalHasReferencesProcess()
+    {
+        foreach ($this->configClasses as $configClassName => $configClass) {
+            $this->embeddedRecursivePropertyProcess('_has_references', $configClassName, $configClass,
+                // Getter
+                function($configClass) {
+                    return
+                        array_key_exists('referencesOne', $configClass) ||
+                        array_key_exists('referencesMany', $configClass);
+                },
+                // Aggregator
+                function($configClassName, $result, $embeddedResults) {
+                    $ret = $result;
+                    foreach ($embeddedResults as $embeddedName => $embeddedResult) {
+                        $ret = $ret || $embeddedResult;
+                    }
+                    return $ret;
+                }
+            );
+        }
+    }
+
     private function globalHasGroupsProcess()
     {
-        do {
-            $continue = false;
-            foreach ($this->configClasses as $class => $configClass) {
-                if (isset($configClass['_has_groups'])) {
-                    continue;
-                }
-
-                $hasGroups = false;
-                if ($configClass['referencesMany'] || $configClass['embeddedsMany']) {
-                    $hasGroups = true;
-                }
-                foreach (array_merge($configClass['embeddedsOne'], $configClass['embeddedsMany']) as $name => $embedded) {
-                    if (!isset($this->configClasses[$embedded['class']]['_has_groups'])) {
-                        $continue = true;
-                        continue 2;
+        foreach ($this->configClasses as $configClassName => $configClass) {
+            $this->embeddedRecursivePropertyProcess('_has_groups', $configClassName, $configClass,
+                // Getter
+                function($configClass) {
+                    return
+                        array_key_exists('embeddedsMany', $configClass) ||
+                        array_key_exists('referencesMany', $configClass);
+                },
+                // Aggregator
+                function($configClassName, $result, $embeddedResults) {
+                    $ret = $result;
+                    foreach ($embeddedResults as $embeddedName => $embeddedResult) {
+                        $ret = $ret || $embeddedResult;
                     }
-                    if ($this->configClasses[$embedded['class']]['_has_groups']) {
-                        $hasGroups = true;
-                    }
+                    return $ret;
                 }
-                $configClass['_has_groups'] = $hasGroups;
-            }
-        } while($continue);
+            );
+        }
     }
 
     private function globalIndexesProcess()
     {
-        do {
-            $continue = false;
-            foreach ($this->configClasses as $class => $configClass) {
-                if (isset($configClass['_indexes'])) {
-                    continue;
-                }
-
-                $indexes = $configClass['indexes'];
-                foreach (array_merge($configClass['embeddedsOne'], $configClass['embeddedsMany']) as $name => $embedded) {
-                    if (!isset($this->configClasses[$embedded['class']]['_indexes'])) {
-                        $continue = true;
-                        continue 2;
-                    }
-                    $embeddedIndexes = array();
-                    foreach ($this->configClasses[$embedded['class']]['_indexes'] as $index) {
-                        $newKeys = array();
-                        foreach ($index['keys'] as $keyName => $value) {
-                            $newKeys[$name.'.'.$keyName] = $value;
+        foreach ($this->configClasses as $configClassName => $configClass) {
+            $this->embeddedRecursivePropertyProcess('_indexes', $configClassName, $configClass,
+                // Getter
+                function ($configClass) {
+                    return array_key_exists('indexes', $configClass) ? $configClass['indexes'] : [];
+                },
+                // Aggregator
+                function ($configClassName, $result, $embeddedResults) {
+                    $ret = empty($result) ? [] : $result;
+                    foreach ($embeddedResults as $embeddedName => $embeddedResult) {
+                        foreach ($embeddedResult as $index) {
+                            $keys = [];
+                            foreach ($index['keys'] as $keyName => $keyValue) {
+                                $keys[$embeddedName . '.' . $keyName] = $keyValue;
+                            }
+                            $index['keys'] = $keys;
+                            $ret[] = $index;
                         }
-                        $index['keys'] = $newKeys;
-                        $embeddedIndexes[] = $index;
                     }
-                    $indexes = array_merge($indexes, $embeddedIndexes);
+                    return $ret;
                 }
-                $configClass['_indexes'] = $indexes;
-            }
-        } while ($continue);
+            );
+        }
     }
 
     /*
