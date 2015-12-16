@@ -981,7 +981,6 @@ EOF
                 },
                 // Aggregator
                 function ($configClassName, $result, $embeddedResults) {
-                    var_dump($embeddedResults);
                     $ret = empty($result) ? [] : $result;
                     foreach ($embeddedResults as $embeddedName => $embeddedResult) {
                         foreach ($embeddedResult as $index) {
