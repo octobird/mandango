@@ -890,19 +890,15 @@ EOF
      * The method checks if the property of the config class already set up. If
      * it is, it just returns the property value.
      * 
-     * If the property is not set up and the $getter closure is given, it runs
-     * it with the $configClass and puts the result into the result array.
+     * If the property is not set up, it runs the $getter closure with the
+     * $configClass and puts the result into the result array.
      * 
      * It than calls itself on all embedded config classes, and puts the
      * returned values into the result array too.
      *
-     * If the $aggregator is not given or it's null, it puts the $getter's
-     * result of the config class into the head position of the array of
-     * embedded results and returs the resulting array.
-     *
-     * If the $aggregator is present, it's run against the result array, and
-     * it's result is set as the property value, and then returned. If not, the
-     * result array is set as the property value and than returned.
+     * The $aggregator is run against the result array, and it's result is set
+     * as the property value, and then returned. If not, the result array is set
+     * as the property value and than returned.
      *
      * During recursive processing, it skips self-embeds to prevent infinite
      * loops.
@@ -916,7 +912,7 @@ EOF
             return $configClass[$propertyName];
         }
 
-        $result = empty($getter) ? null : $getter($configClass);
+        $result = $getter($configClass);
 
         $embeddedResults = [];
         foreach (array_merge(
@@ -925,7 +921,7 @@ EOF
         ) as $embeddedName => $embedded) {
             // TODO: fix large diameter loops too
             if ($embedded['class'] == $configClassName) continue; // Skip self-embeds
-            $embeddedResults[$embeddedName] = $this->embeddedRecursivePropertyProcess($propertyName, $embeddedName, $embedded, $getter, $aggregator);
+            $embeddedResults[$embeddedName] = $this->embeddedRecursivePropertyProcess($propertyName, $embedded['class'], $this->configClasses[$embedded['class']], $getter, $aggregator);
         }
 
         return $configClass[$propertyName] = $aggregator($configClassName, $result, $embeddedResults);
@@ -985,6 +981,7 @@ EOF
                 },
                 // Aggregator
                 function ($configClassName, $result, $embeddedResults) {
+                    var_dump($embeddedResults);
                     $ret = empty($result) ? [] : $result;
                     foreach ($embeddedResults as $embeddedName => $embeddedResult) {
                         foreach ($embeddedResult as $index) {
