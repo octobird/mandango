@@ -4,6 +4,7 @@
  * This file is part of Mandango.
  *
  * (c) Pablo Díez <pablodip@gmail.com>
+ * (c) Fábián Tamás László <giganetom@gmail.com>
  *
  * This source file is subject to the MIT license that is bundled
  * with this source code in the file LICENSE.
@@ -12,86 +13,48 @@
 namespace Mandango;
 
 /**
- * Connection.
+ * A connection to a database on a MongoDB server or cluster
  *
  * @author Pablo Díez <pablodip@gmail.com>
  *
  * @api
  */
-class Connection implements ConnectionInterface
+class Connection
 {
-    private $server;
-    private $dbName;
-    private $options;
-
-    private $loggerCallable;
-    private $logDefault;
-
-    private $mongo;
-    private $mongoDB;
+    private $uri;
+    private $options = [];
+    private $driverOptions = [];
+    private $manager;
+    private $database;
 
     /**
      * Constructor.
      *
-     * @param string $server  The server.
-     * @param string $dbName  The database name.
-     * @param array  $options The \Mongo options (optional).
+     * @param string $uri     The connection URI.
+     * @param array  $options Connection string options (optional).
+     * 
+     * For options see https://docs.mongodb.org/manual/reference/connection-string/#connections-connection-options
      *
      * @api
      */
-    public function __construct($server, $dbName, array $options = array())
+    public function __construct($uri, $database, array $options = array(), $driverOptions = array())
     {
-        $this->server = $server;
-        $this->dbName = $dbName;
-        $this->options = $options;
+        $this->uri      = $uri;
+        $this->options  = $options;
+        $this->database = $database;
+        $this->manager = new \MongoDB\Driver\Manager($this->uri, $this->options);
     }
 
     /**
-     * Sets the server.
+     * Returns the connection URI.
      *
-     * @param string $server The server.
-     *
-     * @throws \LogicException If the mongo is initialized.
+     * @return string $uri The URI.
      *
      * @api
      */
-    public function setServer($server)
+    public function getUri()
     {
-        if (null !== $this->mongo) {
-            throw new \LogicException('The mongo is initialized.');
-        }
-
-        $this->server = $server;
-    }
-
-    /**
-     * Returns the server.
-     *
-     * @return string $server The server.
-     *
-     * @api
-     */
-    public function getServer()
-    {
-        return $this->server;
-    }
-
-    /**
-     * Sets the db name.
-     *
-     * @param string $dbName The db name.
-     *
-     * @throws \LogicException If the mongoDb is initialized.
-     *
-     * @api
-     */
-    public function setDbName($dbName)
-    {
-        if (null !== $this->mongoDB) {
-            throw new \LogicException('The mongoDb is initialized.');
-        }
-
-        $this->dbName = $dbName;
+        return $this->uri;
     }
 
     /**
@@ -101,31 +64,13 @@ class Connection implements ConnectionInterface
      *
      * @api
      */
-    public function getDbName()
+    public function getDatabase()
     {
-        return $this->dbName;
+        return $this->database;
     }
 
     /**
-     * Sets the options.
-     *
-     * @param array $options An array of options.
-     *
-     * @throws \LogicException If the mongo is initialized.
-     *
-     * @api
-     */
-    public function setOptions(array $options)
-    {
-        if (null !== $this->mongo) {
-            throw new \LogicException('The mongo is initialized.');
-        }
-
-        $this->options = $options;
-    }
-
-    /**
-     * Returns the options.
+     * Returns the connection string options.
      *
      * @return array The options.
      *
@@ -137,74 +82,22 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the driver options.
+     *
+     * @return array The driver options.
+     *
+     * @api
      */
-    public function setLoggerCallable($loggerCallable = null)
+    public function getDriverOptions()
     {
-        if (null !== $this->mongo) {
-            throw new \RuntimeException('The connection has already Mongo.');
-        }
-
-        $this->loggerCallable = $loggerCallable;
+        return $this->driverOptions;
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the connection manager
      */
-    public function getLoggerCallable()
+    public function getManager()
     {
-        return $this->loggerCallable;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setLogDefault(array $logDefault)
-    {
-        if (null !== $this->mongo) {
-            throw new \RuntimeException('The connection has already Mongo.');
-        }
-
-        $this->logDefault = $logDefault;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getLogDefault()
-    {
-        return $this->logDefault;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getMongo()
-    {
-        if (null === $this->mongo) {
-            if (null !== $this->loggerCallable) {
-                $this->mongo = new \Mandango\Logger\LoggableMongo($this->server, $this->options);
-                $this->mongo->setLoggerCallable($this->loggerCallable);
-                if (null !== $this->logDefault) {
-                    $this->mongo->setLogDefault($this->logDefault);
-                }
-            } else {
-                $this->mongo = new \MongoClient($this->server, $this->options);
-            }
-        }
-
-        return $this->mongo;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getMongoDB()
-    {
-        if (null === $this->mongoDB) {
-            $this->mongoDB = $this->getMongo()->selectDB($this->dbName);
-        }
-
-        return $this->mongoDB;
+        return $this->manager;
     }
 }

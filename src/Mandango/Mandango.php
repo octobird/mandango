@@ -22,7 +22,11 @@ use Mandango\Cache\CacheInterface;
  */
 class Mandango
 {
-    const VERSION = '1.0.0-DEV';
+    const RP_PRIMARY             = \MongoDB\Driver\ReadPreference.RP_PRIMARY;
+    const RP_PRIMARY_PREFERRED   = \MongoDB\Driver\ReadPreference.RP_PRIMARY_PREFERRED;
+    const RP_SECONDARY           = \MongoDB\Driver\ReadPreference.RP_SECONDARY;
+    const RP_SECONDARY_PREFERRED = \MongoDB\Driver\ReadPreference.RP_SECONDARY_PREFERRED;
+    const RP_NEAREST             = \MongoDB\Driver\ReadPreference.RP_NEAREST;
 
     private $metadataFactory;
     private $cache;
@@ -41,7 +45,7 @@ class Mandango
      *
      * @api
      */
-    public function __construct(MetadataFactory $metadataFactory, CacheInterface $cache, $loggerCallable = null)
+    public function __construct(MetadataFactory $metadataFactory, CacheInterface $cache)
     {
         $this->metadataFactory = $metadataFactory;
         $this->cache = $cache;
@@ -102,20 +106,13 @@ class Mandango
     /**
      * Set a connection.
      *
-     * @param string              $name       The connection name.
-     * @param ConnectionInterface $connection The connection.
+     * @param string     $name       The connection name.
+     * @param Connection $connection The connection.
      *
      * @api
      */
-    public function setConnection($name, ConnectionInterface $connection)
+    public function setConnection($name, Connection $connection)
     {
-        if (null !== $this->loggerCallable) {
-            $connection->setLoggerCallable($this->loggerCallable);
-            $connection->setLogDefault(array('connection' => $name));
-        } else {
-            $connection->setLoggerCallable(null);
-        }
-
         $this->connections[$name] = $connection;
     }
 
@@ -128,10 +125,7 @@ class Mandango
      */
     public function setConnections(array $connections)
     {
-        $this->connections = array();
-        foreach ($connections as $name => $connection) {
-            $this->setConnection($name, $connection);
-        }
+        $this->connections = $connections;
     }
 
     /**
@@ -181,7 +175,7 @@ class Mandango
      *
      * @param string $name The connection name.
      *
-     * @return ConnectionInterface The connection.
+     * @return Connection The connection.
      *
      * @throws \InvalidArgumentException If the connection does not exists.
      *
@@ -235,7 +229,7 @@ class Mandango
     /**
      * Returns the default connection.
      *
-     * @return \Mandango\ConnectionInterface The default connection.
+     * @return \Mandango\Connection The default connection.
      *
      * @throws \RuntimeException If there is not default connection name.
      * @throws \RuntimeException If the default connection does not exists.

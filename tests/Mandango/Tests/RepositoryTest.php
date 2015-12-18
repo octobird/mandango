@@ -13,7 +13,6 @@ namespace Mandango\Tests;
 
 use Mandango\Repository as BaseRepository;
 use Mandango\Connection;
-use Mandango\ConnectionInterface;
 use Mandango\Mandango;
 use Mandango\Query;
 
@@ -60,7 +59,7 @@ class RepositoryMock extends Repository
         return $this->collection;
     }
 
-    public function setConnection(ConnectionInterface $connection)
+    public function setConnection(Connection $connection)
     {
         $this->connection = $connection;
 
@@ -503,7 +502,7 @@ class RepositoryTest extends TestCase
             ->method('command')
             ->will($this->returnValue($result));
 
-        $connection = $this->getMock('Mandango\ConnectionInterface');
+        $connection = $this->getMock('Mandango\Connection');
         $connection
             ->expects($this->any())
             ->method('getMongoDB')
@@ -533,7 +532,7 @@ class RepositoryTest extends TestCase
 
     private function createConnectionMockWithMongoDb($mongoDb)
     {
-        $connection = $this->getMock('Mandango\ConnectionInterface');
+        $connection = $this->getMock('Mandango\Connection');
         $connection
             ->expects($this->any())
             ->method('getMongoDB')
