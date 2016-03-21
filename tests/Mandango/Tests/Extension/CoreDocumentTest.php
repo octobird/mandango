@@ -1030,6 +1030,15 @@ class CoreDocumentTest extends TestCase
         $this->assertSame(
             array(
                 'source'   =>  array(
+                    'name' => null,
+                    'text' => 234,
+                    'note' => null,
+                    'line' => 345,
+                    'from' => null,
+                    'authorId' => null,
+                    'categoryIds' => null,
+                    'author' => null,
+                    'categories' => array(),
                     'info' => array(
                         'name' => 456,
                         'text' => 567,
