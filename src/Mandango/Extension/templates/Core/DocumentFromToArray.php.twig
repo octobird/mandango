@@ -72,23 +72,32 @@
     /**
      * Export the document data to an array.
      *
-     * @param Boolean $withReferenceFields Whether include the fields of references or not (false by default).
+     * @param array $fields List of returning fields. array(*) will return recursively all the fields.
      *
      * @return array An array with the document data.
      */
-    public function toArray($withReferenceFields = false)
+    public function toArray($fields = array())
     {
+        if ($fields === true) {
+            $fields = array('*');
+        }
+
 {# inheritance #}
 {% if config_class.inheritance %}
-        $array = parent::toArray($withReferenceFields);
+        $array = parent::toArray($fields, $fields);
 {% elseif config_class.isEmbedded %}
         $array = array();
 {% else %}
+        $array = array();
         $id = $this->getId();
         if ($id instanceof \MongoId) {
             $id = $id->{'$id'};
         }
-        $array = array('_id' => $id);
+
+        $withFields = empty($fields) || in_array('*', $fields) || in_array('_id', $fields);
+        if ($withFields) {
+            $array['_id'] = $id;
+        }
 {% endif %}
 
 {# fields #}
@@ -96,9 +105,13 @@
 {% if field.inherited is not defined or not field.inherited %}
 {# no reference field #}
 {% if field.referenceField is not defined %}
-        $array['{{ name }}'] = $this->get{{ name|ucfirst }}();
+        // There wasn't filter
+        if (empty($fields) || in_array('*', $fields) || in_array('{{ name }}', $fields)) {
+            $array['{{ name }}'] = $this->get{{ name|ucfirst }}();
+        }
 {# reference field #}
 {% else %}
+        $withReferenceFields = in_array('*', $fields) || in_array('{{ name }}', $fields);
         if ($withReferenceFields) {
             $array['{{ name }}'] = $this->get{{ name|ucfirst }}();
         }
@@ -108,10 +121,12 @@
 {# references one #}
 {% for name, reference in config_class.referencesOne %}
 {% if reference.inherited is not defined or not reference.inherited %}
+        $withReferenceFields = in_array('*', $fields) || in_array('{{ name }}', $fields) || array_key_exists('{{ name }}', $fields);
         if ($withReferenceFields) {
             $document = $this->get{{ name | ucfirst }}();
             if (!empty($document)) {
-                $array['{{name}}'] = $document->toArray($withReferenceFields);
+                $referenceFields = isset($fields['{{name}}']) ? $fields['{{name}}'] : array('*');
+                $array['{{name}}'] = $document->toArray($referenceFields);
             } else {
                 $array['{{name}}'] = null;
             }
@@ -121,26 +136,38 @@
 {# references Many #}
 {% for name, reference in config_class.referencesMany %}
 {% if reference.inherited is not defined or not reference.inherited %}
+        $withReferenceFields = in_array('*', $fields) || in_array('{{ name }}', $fields) || array_key_exists('{{ name }}', $fields);
         if ($withReferenceFields) {
-            $array['{{name}}'] = $this->get{{ name | ucfirst }}()->toArray($withReferenceFields);
+            $referenceFields = isset($fields['{{name}}']) ? $fields['{{name}}'] : array('*');
+            $array['{{name}}'] = $this->get{{ name | ucfirst }}()->toArray($referenceFields);
         }
 {% endif %}
 {% endfor %}
 {# embeddeds one #}
 {% for name, embedded in config_class.embeddedsOne %}
 {% if embedded.inherited is not defined or not embedded.inherited %}
-        $document = $this->get{{ name | ucfirst }}();
-        if (!empty($document)) {
-            $array['{{name}}'] = $document->toArray($withReferenceFields);
-        } else {
-            $array['{{name}}'] = null;
+        $document   = $this->get{{ name | ucfirst }}();
+        $withFields = empty($fields) || in_array('*', $fields) || in_array('{{ name }}', $fields) || array_key_exists('{{ name }}', $fields);
+        if ($withFields) {
+            if (!empty($document)) {
+                $embeddedFields = isset($fields['{{name}}']) ? $fields['{{name}}'] : array('*');
+                $array['{{name}}'] = $document->toArray($embeddedFields);
+            } else {
+                $array['{{name}}'] = null;
+            }
         }
 {% endif %}
 {% endfor %}
 {# embeddeds many #}
 {% for name, embedded in config_class.embeddedsMany %}
 {% if embedded.inherited is not defined or not embedded.inherited %}
-        $array['{{name}}'] = $this->get{{ name | ucfirst }}()->toArray($withReferenceFields);{% endif %}
+        $withFields = empty($fields) || in_array('*', $fields) || in_array('{{ name }}', $fields) || array_key_exists('{{ name }}', $fields);
+        if ($withFields) {
+            $embeddedFields = array_key_exists('{{ name }}', $fields) ? $fields['{{name}}'] : array('*');
+            $array['{{name}}'] = $this->get{{ name | ucfirst }}()->toArray($embeddedFields);
+        }
+{% endif %}
+
 {% endfor %}
 
         return $array;

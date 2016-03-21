@@ -901,6 +901,158 @@ class CoreDocumentTest extends TestCase
         ), $article->toArray());
     }
 
+    public function testToFilteredArray()
+    {
+        $article = $this->mandango->create('Model\Article')
+            ->setId(123)
+            ->setTitle('foo')
+            ->setContent('bar')
+            ->setNote(null)
+            ->setIsActive(false)
+        ;
+        $article->getComments()->add($this->mandango->create('Model\Comment')
+            ->setName(123)
+            ->setText(null)
+            ->setNote('foo')
+        );
+
+        $article->setSource($this->mandango->create('Model\Source')
+            ->setText(234)
+            ->setLine(345)
+            ->setInfo($this->mandango->create('Model\Info')
+                ->setName(456)
+                ->setText(567)
+            )
+        );
+
+        $article->setAuthor($this->mandango->create('Model\Author')->setName('foo'));
+
+        $article->addCategories($this->mandango->create('Model\Category')->setName('fa'));
+
+        $this->assertSame(array(
+            '_id'       => 123,
+            'title'    => 'foo',
+            'content'  => 'bar',
+            'note'     => null,
+            'line'     => null,
+            'text'     => null,
+            'isActive' => false,
+            'date'     => null,
+            'database' => null,
+            'source'   =>  array(
+                'name' => null,
+                'text' => 234,
+                'note' => null,
+                'line' => 345,
+                'from' => null,
+                'authorId' => null,
+                'categoryIds' => null,
+                'author' => null,
+                'categories' => array(),
+                'info' => array (
+                    'name' => 456,
+                    'text' => 567,
+                    'note' => null,
+                    'line' => null,
+                )
+            ),
+            'simpleEmbedded' => null,
+            'comments' => array(
+                0 => array (
+                    'name' => 123,
+                    'text' => null,
+                    'note' => 'foo',
+                    'line' => null,
+                    'authorId' => null,
+                    'categoryIds' => null,
+                    'author' => null,
+                    'categories' => array(),
+                    'infos' => array()
+                )
+            )
+        ), $article->toArray());
+
+
+        $this->assertSame($article->toArray(true), $article->toArray(['*']));
+
+        $this->assertSame(
+            array(
+                'title'    => 'foo',
+                'content'  => 'bar',
+                'author' => array(
+                    '_id' => null,
+                    'name' => 'foo'
+                ),
+                'categories' => array(
+                    0 => array(
+                        'name' => 'fa'
+                    )
+                ),
+                'source'   =>  array(
+                    'name' => null,
+                    'text' => 234
+                )
+            ),
+            $article->toArray(array(
+                'title',
+                'content',
+                'author' => array(
+                    '_id',
+                    'name'
+                ),
+                'categories' => array(
+                    'name'
+                ),
+                'source' => array(
+                    'name',
+                    'text'
+                )
+            ))
+        );
+
+        $this->assertSame(
+            array(
+                'source'   =>  array(
+                    'info' => array(
+                        'name' => 456
+                    )
+                )
+            ),
+            $article->toArray(array(
+                'source' => array(
+                    'info' => array(
+                        'name'
+                    )
+                )
+            ))
+        );
+
+        $this->assertSame(
+            array(
+                'source'   =>  array(
+                    'name' => null,
+                    'text' => 234,
+                    'note' => null,
+                    'line' => 345,
+                    'from' => null,
+                    'authorId' => null,
+                    'categoryIds' => null,
+                    'author' => null,
+                    'categories' => array(),
+                    'info' => array(
+                        'name' => 456,
+                        'text' => 567,
+                        'note' => null,
+                        'line' => null
+                    )
+                )
+            ),
+            $article->toArray(array(
+                'source' => ['*']
+            ))
+        );
+    }
+
     public function testToArrayInitializeFields()
     {
         $article = $this->mandango->create('Model\Article')
