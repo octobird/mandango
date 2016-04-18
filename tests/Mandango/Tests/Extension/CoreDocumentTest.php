@@ -973,8 +973,6 @@ class CoreDocumentTest extends TestCase
         ), $article->toArray());
 
 
-        $this->assertSame($article->toArray(true), $article->toArray(['*']));
-
         $this->assertSame(
             array(
                 'title'    => 'foo',
