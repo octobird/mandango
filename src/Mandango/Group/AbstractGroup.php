@@ -146,11 +146,11 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
     /**
      * Returns an array of arrays representing the contained documents
      */
-    public function toArray($withReferenceFields = false)
+    public function toArray(array $fields = array())
     {
         $arrays = array();
         foreach ($this->all() as $document) {
-            $arrays[] = $document->toArray($withReferenceFields);
+            $arrays[] = $document->toArray($fields);
         }
         return $arrays;
     }
