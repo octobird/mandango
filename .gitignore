@@ -6,3 +6,13 @@ composer.lock
 /tests/Model/Mapping/
 /vendor/
 BUILD
+.idea/.name
+.idea/copyright/profiles_settings.xml
+.idea/dictionaries/David.xml
+.idea/misc.xml
+.idea/workspace.xml
+.idea/php.xml
+.idea/mandango.iml
+.idea/vcs.xml
+.idea/modules.xml
+.idea/encodings.xml

@@ -945,10 +945,10 @@ class CoreDocumentTest extends TestCase
                 'note' => null,
                 'line' => 345,
                 'from' => null,
-                'authorId' => null,
+               /* 'authorId' => null,
                 'categoryIds' => null,
                 'author' => null,
-                'categories' => array(),
+                'categories' => array(),*/
                 'info' => array (
                     'name' => 456,
                     'text' => 567,
@@ -963,15 +963,14 @@ class CoreDocumentTest extends TestCase
                     'text' => null,
                     'note' => 'foo',
                     'line' => null,
-                    'authorId' => null,
+                    /*'authorId' => null,
                     'categoryIds' => null,
                     'author' => null,
-                    'categories' => array(),
+                    'categories' => array(),*/
                     'infos' => array()
                 )
             )
         ), $article->toArray());
-
 
         $this->assertSame(
             array(
@@ -1033,8 +1032,8 @@ class CoreDocumentTest extends TestCase
                     'note' => null,
                     'line' => 345,
                     'from' => null,
-                    'authorId' => null,
-                    'categoryIds' => null,
+                   /* 'authorId' => null,
+                    'categoryIds' => null,*/
                     'author' => null,
                     'categories' => array(),
                     'info' => array(
