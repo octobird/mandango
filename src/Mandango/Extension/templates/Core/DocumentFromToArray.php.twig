@@ -107,7 +107,7 @@
         }
 {# reference field #}
 {% else %}
-        $withReferenceFields = in_array('*', $fields) || in_array('{{ name }}', $fields);
+        $withReferenceFields = in_array('{{ name }}', $fields);
         if ($withReferenceFields) {
             $array['{{ name }}'] = $this->get{{ name|ucfirst }}();
         }
@@ -121,7 +121,7 @@
         if ($withReferenceFields) {
             $document = $this->get{{ name | ucfirst }}();
             if (!empty($document)) {
-                $referenceFields = isset($fields['{{name}}']) ? $fields['{{name}}'] : array('*');
+                $referenceFields = isset($fields['{{name}}']) ? $fields['{{name}}'] : array();
                 $array['{{name}}'] = $document->toArray($referenceFields);
             } else {
                 $array['{{name}}'] = null;
@@ -134,7 +134,7 @@
 {% if reference.inherited is not defined or not reference.inherited %}
         $withReferenceFields = in_array('*', $fields) || in_array('{{ name }}', $fields) || array_key_exists('{{ name }}', $fields);
         if ($withReferenceFields) {
-            $referenceFields = isset($fields['{{name}}']) ? $fields['{{name}}'] : array('*');
+            $referenceFields = isset($fields['{{name}}']) ? $fields['{{name}}'] : array();
             $array['{{name}}'] = $this->get{{ name | ucfirst }}()->toArray($referenceFields);
         }
 {% endif %}
@@ -146,7 +146,7 @@
         $withFields = empty($fields) || in_array('*', $fields) || in_array('{{ name }}', $fields) || array_key_exists('{{ name }}', $fields);
         if ($withFields) {
             if (!empty($document)) {
-                $embeddedFields = isset($fields['{{name}}']) ? $fields['{{name}}'] : array('*');
+                $embeddedFields = isset($fields['{{name}}']) ? $fields['{{name}}'] : array();
                 $array['{{name}}'] = $document->toArray($embeddedFields);
             } else {
                 $array['{{name}}'] = null;
@@ -159,7 +159,7 @@
 {% if embedded.inherited is not defined or not embedded.inherited %}
         $withFields = empty($fields) || in_array('*', $fields) || in_array('{{ name }}', $fields) || array_key_exists('{{ name }}', $fields);
         if ($withFields) {
-            $embeddedFields = array_key_exists('{{ name }}', $fields) ? $fields['{{name}}'] : array('*');
+            $embeddedFields = array_key_exists('{{ name }}', $fields) ? $fields['{{name}}'] : array();
             $array['{{name}}'] = $this->get{{ name | ucfirst }}()->toArray($embeddedFields);
         }
 {% endif %}
