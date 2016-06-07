@@ -128,8 +128,6 @@ class EmbeddedGroup extends Group
         }
         $path = implode('.', $path);
 
-        $this->_root->addFieldCache($path);
-
         $result = $this
             ->_root
             ->getRepository()

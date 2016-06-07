@@ -29,7 +29,19 @@ abstract class Repository
     protected $collectionName;
 
     private $mandango;
-    private $identityMap;
+
+    /**
+     * Keeps documents in memory accessible by their ID.
+     * 
+     * This functions as an LRU cache to reduce the number of queries towards
+     * the database. This is useful in canse of "joining" collections by
+     * references and other bad programming practices, and keeps benchmarks
+     * happy.
+     * 
+     * TODO: the LRU algorithm is not implemented yet.
+     */
+    public $idMap;
+
     private $connection;
     private $collection;
 
@@ -43,7 +55,7 @@ abstract class Repository
     public function __construct(Mandango $mandango)
     {
         $this->mandango = $mandango;
-        $this->identityMap = new IdentityMap();
+        $this->idMap = new IdMap();
     }
 
     /**
@@ -56,18 +68,6 @@ abstract class Repository
     public function getMandango()
     {
         return $this->mandango;
-    }
-
-    /**
-     * Returns the identity map.
-     *
-     * @return \Mandango\IdentityMapInterface The identity map.
-     *
-     * @api
-     */
-    public function getIdentityMap()
-    {
-        return $this->identityMap;
     }
 
     /**
@@ -133,7 +133,7 @@ abstract class Repository
     /**
      * Returns the connection.
      *
-     * @return \Mandango\ConnectionInterface The connection.
+     * @return \Mandango\Connection The connection.
      *
      * @api
      */
@@ -227,52 +227,11 @@ abstract class Repository
     public function findById(array $ids)
     {
         $mongoIds = $this->idsToMongo($ids);
-        $cachedDocuments = $this->findCachedDocuments($mongoIds);
 
-        if ($this->areAllDocumentsCached($cachedDocuments, $mongoIds)) {
-            return $cachedDocuments;
-        }
-
-        $idsToQuery = $this->getIdsToQuery($cachedDocuments, $mongoIds);
-        $queriedDocuments = $this->queryDocumentsByIds($idsToQuery);
+        $cachedDocuments  = array_intersect_key($this->idMap, array_fill_keys($mongoIds, 1));
+        $queriedDocuments = $this->createQuery(['_id' => ['$in' => array_diff($mongoIds, array_keys($cachedDocuments))]])->all();
 
         return array_merge($cachedDocuments, $queriedDocuments);
-    }
-
-    private function findCachedDocuments($mongoIds)
-    {
-        $documents = array();
-        foreach ($mongoIds as $id) {
-            if ($this->identityMap->has($id)) {
-                $documents[(string) $id] = $this->identityMap->get($id);
-            }
-        }
-
-        return $documents;
-    }
-
-    private function areAllDocumentsCached($cachedDocuments, $mongoIds)
-    {
-        return count($cachedDocuments) == count($mongoIds);
-    }
-
-    private function getIdsToQuery($cachedDocuments, $mongoIds)
-    {
-        $ids = array();
-        foreach ($mongoIds as $id) {
-            if (!isset($cachedDocuments[(string) $id])) {
-                $ids[] = $id;
-            }
-        }
-
-        return $ids;
-    }
-
-    private function queryDocumentsByIds($ids)
-    {
-        $criteria = array('_id' => array('$in' => $ids));
-
-        return $this->createQuery($criteria)->all();
     }
 
     /**
@@ -287,12 +246,7 @@ abstract class Repository
     public function findOneById($id)
     {
         $id = $this->idToMongo($id);
-
-        if ($this->identityMap->has($id)) {
-            return $this->identityMap->get($id);
-        }
-
-        return $this->createQuery(array('_id' => $id))->one();
+        return array_key_exists($id, $this->idMap) ? $this->idMap[$id] : $this->createQuery(array('_id' => $id))->one();
     }
 
     /**

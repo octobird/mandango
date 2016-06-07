@@ -70,26 +70,6 @@ class CoreDocumentTest extends TestCase
         $this->assertNull($article->getNote());
     }
 
-    public function testFieldGetterSaveFieldsQueryCache()
-    {
-        $articleRaw = array(
-            'title'   => 'foo',
-            'content' => 123,
-        );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insert($articleRaw);
-
-        $query = $this->mandango->getRepository('Model\Article')->createQuery();
-        $article = $query->one();
-
-        $this->assertNull($query->getFieldsCache());
-        $article->getTitle();
-        $this->assertSame(array('title' => 1), $query->getFieldsCache());
-        $article->getContent();
-        $this->assertSame(array('title' => 1, 'content' => 1), $query->getFieldsCache());
-        $article->getNote();
-        $this->assertSame(array('title' => 1, 'content' => 1, 'note' => 1), $query->getFieldsCache());
-    }
-
     public function testReferencesOneSettersGetters()
     {
         $article = $this->mandango->create('Model\Article');
@@ -110,22 +90,6 @@ class CoreDocumentTest extends TestCase
         $article->setAuthor(null);
         $this->assertNull($article->getAuthor());
         $this->assertNull($article->getAuthorId());
-    }
-
-    public function testReferencesOneGetterSaveReferenceCache()
-    {
-        $articleRaw = array(
-            'title'   => 'foo',
-            'content' => 123,
-        );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insert($articleRaw);
-
-        $query = $this->mandango->getRepository('Model\Article')->createQuery();
-        $article = $query->one();
-
-        $this->assertNull($query->getReferencesCache());
-        $article->getAuthor();
-        $this->assertSame(array('author'), $query->getReferencesCache());
     }
 
     /**
@@ -161,22 +125,6 @@ class CoreDocumentTest extends TestCase
         $this->assertSame($article, $categories->getParent());
         $this->assertSame('categoryIds', $categories->getField());
         $this->assertSame($categories, $article->getCategories());
-    }
-
-    public function testReferencesManyGetterSaveReferenceCache()
-    {
-        $articleRaw = array(
-            'title'   => 'foo',
-            'content' => 123,
-        );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insert($articleRaw);
-
-        $query = $this->mandango->getRepository('Model\Article')->createQuery();
-        $article = $query->one();
-
-        $this->assertNull($query->getReferencesCache());
-        $article->getCategories();
-        $this->assertSame(array('categories'), $query->getReferencesCache());
     }
 
     public function testReferencesManyAdd()
@@ -483,60 +431,6 @@ class CoreDocumentTest extends TestCase
         $this->assertNull($info->getText());
         $this->assertNull($info->getLine());
         $this->assertNull($info->getName());
-    }
-
-    public function testEmbeddedsOneGetterSaveFieldsCacheQuering()
-    {
-        $articleRaw = array(
-            'source' => array(
-                'name' => 'foo',
-                'text' => 234,
-                'info' => array(
-                    'text' => 'bar',
-                    'line' => 345,
-                ),
-            ),
-        );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insert($articleRaw);
-
-        $query = $this->mandango->getRepository('Model\Article')->createQuery();
-        $article = $query->one();
-
-        $source = $article->getSource();
-        $this->assertNull($query->getFieldsCache());
-        $source->getName();
-        $this->assertSame(array('source.name' => 1), $query->getFieldsCache());
-        $source->getText();
-        $this->assertSame(array('source.name' => 1, 'source.text' => 1), $query->getFieldsCache());
-        $source->getNote();
-        $this->assertSame(array('source.name' => 1, 'source.text' => 1, 'source.note' => 1), $query->getFieldsCache());
-
-        $info = $source->getInfo();
-        $this->assertSame(array('source.name' => 1, 'source.text' => 1, 'source.note' => 1), $query->getFieldsCache());
-        $info->getName();
-        $this->assertSame(array(
-            'source.name' => 1,
-            'source.text' => 1,
-            'source.note' => 1,
-            'source.info.name' => 1,
-        ), $query->getFieldsCache());
-        $info->getNote();
-        $this->assertSame(array(
-            'source.name' => 1,
-            'source.text' => 1,
-            'source.note' => 1,
-            'source.info.name' => 1,
-            'source.info.note' => 1,
-        ), $query->getFieldsCache());
-        $info->getLine();
-        $this->assertSame(array(
-            'source.name' => 1,
-            'source.text' => 1,
-            'source.note' => 1,
-            'source.info.name' => 1,
-            'source.info.note' => 1,
-            'source.info.line' => 1,
-        ), $query->getFieldsCache());
     }
 
     public function testEmbeddedsManyGetter()
@@ -1159,52 +1053,6 @@ class CoreDocumentTest extends TestCase
         $this->assertNull($infos[0]->getText());
         $this->assertSame('barfoo', $infos[0]->getLine());
         $this->assertSame(array(), $comments[1]->getInfos()->getSaved());
-    }
-
-    public function testEmbeddedsManySaveFieldsCacheQuering()
-    {
-        $articleRaw = array(
-            'comments' => array(
-                array(
-                    'name' => 'foo',
-                    'text' => 'bar',
-                    'infos' => array(
-                        array(
-                            'name' => 'foobar',
-                            'line' => 'barfoo',
-                        ),
-                        array(
-                            'text' => 'ups',
-                        ),
-                    ),
-                ),
-                array(
-                    'name' => 'fooups',
-                    'text' => 'upsfoo',
-                ),
-            ),
-        );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insert($articleRaw);
-
-        $query = $this->mandango->getRepository('Model\Article')->createQuery();
-        $article = $query->one();
-
-        $this->assertNull($query->getFieldsCache());
-        $comments = $article->getComments();
-        $this->assertNull($query->getFieldsCache());
-        $savedComments = $comments->getSaved();
-        $this->assertSame(array('comments' => 1), $query->getFieldsCache());
-        foreach ($comments as $comment) {
-            $comment->getName();
-        }
-        $this->assertSame(array('comments' => 1), $query->getFieldsCache());
-        $commentNew = $this->mandango->create('Model\Comment');
-        $comments->add($commentNew);
-        $commentNew->getName();
-        $this->assertSame(array('comments' => 1), $query->getFieldsCache());
-        $this->assertGreaterThan(0, count($savedComments));
-        $savedInfos = $savedComments[0]->getInfos()->getSaved();
-        $this->assertSame(array('comments' => 1), $query->getFieldsCache());
     }
 
     public function testEmbeddedsManyNoQueryNewDocument()

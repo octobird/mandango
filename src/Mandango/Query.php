@@ -78,13 +78,6 @@ abstract class Query implements \Countable, \IteratorAggregate
         $this->fields = array('_id' => 1);
         $this->references = array();
         $this->snapshot = false;
-
-        if ($fields = $this->getFieldsCache()) {
-            $this->fields = $fields;
-        }
-        if ($references = $this->getReferencesCache()) {
-            $this->references = $references;
-        }
     }
 
     /**
@@ -107,30 +100,6 @@ abstract class Query implements \Countable, \IteratorAggregate
     public function getHash()
     {
         return $this->hash;
-    }
-
-    /**
-     * Returns the fields in cache.
-     *
-     * @return array|null The fields in cache, or null if there is not.
-     */
-    public function getFieldsCache()
-    {
-        $cache = $this->repository->getMandango()->getCache()->get($this->hash);
-
-        return ($cache && isset($cache['fields'])) ? $cache['fields'] : null;
-    }
-
-    /**
-     * Returns the references in cache.
-     *
-     * @return array|null The references in cache, or null if there is not.
-     */
-    public function getReferencesCache()
-    {
-        $cache = $this->repository->getMandango()->getCache()->get($this->hash);
-
-        return ($cache && isset($cache['references'])) ? $cache['references'] : null;
     }
 
     /**

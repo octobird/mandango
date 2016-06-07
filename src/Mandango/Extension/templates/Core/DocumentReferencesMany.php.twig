@@ -11,14 +11,8 @@
     public function get{{ name|ucfirst }}()
     {
         if (!isset($this->data['referencesMany']['{{ name }}'])) {
-{% if not config_class.isEmbedded %}
-            if (!$this->isNew()) {
-                $this->addReferenceCache('{{ name }}');
-            }
-{% endif %}
             $this->data['referencesMany']['{{ name }}'] = new \Mandango\Group\ReferenceGroup('{{ referenceMany.class }}', $this, '{{ referenceMany.field }}');
         }
-
         return $this->data['referencesMany']['{{ name }}'];
     }
 {# polymorphic #}

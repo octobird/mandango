@@ -33,11 +33,6 @@
     public function get{{ name|ucfirst }}()
     {
         if (!isset($this->data['referencesOne']['{{ name }}'])) {
-{% if not config_class.isEmbedded %}
-            if (!$this->isNew()) {
-                $this->addReferenceCache('{{ name }}');
-            }
-{% endif %}
             if (!$id = $this->get{{ referenceOne.field|ucfirst }}()) {
                 return null;
             }

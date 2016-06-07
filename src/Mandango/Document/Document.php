@@ -22,7 +22,7 @@ abstract class Document extends AbstractDocument
 {
     private $isNew = true;
     private $id;
-    private $queryHashes = array();
+    private $queryHashes = [];
 
     /**
      * Returns the repository.
@@ -180,36 +180,6 @@ abstract class Document extends AbstractDocument
     public function clearQueryHashes()
     {
         $this->queryHashes = array();
-    }
-
-    /**
-     * Add a field cache.
-     */
-    public function addFieldCache($field)
-    {
-        $cache = $this->getMandango()->getCache();
-
-        foreach ($this->getQueryHashes() as $hash => $_) {
-            $value = $cache->has($hash) ? $cache->get($hash) : array();
-            $value['fields'][$field] = 1;
-            $cache->set($hash, $value);
-        }
-    }
-
-    /**
-     * Adds a reference cache
-     */
-    public function addReferenceCache($reference)
-    {
-        $cache = $this->getMandango()->getCache();
-
-        foreach ($this->getQueryHashes() as $hash => $_) {
-            $value = $cache->has($hash) ? $cache->get($hash) : array();
-            if (!isset($value['references']) || !in_array($reference, $value['references'])) {
-                $value['references'][] = $reference;
-                $cache->set($hash, $value);
-            }
-        }
     }
 
     public function preInsertEvent() {}

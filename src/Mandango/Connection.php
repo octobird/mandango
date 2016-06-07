@@ -18,7 +18,7 @@ namespace Mandango;
  *
  * @api
  */
-class Connection implements ConnectionInterface
+class Connection
 {
     private $server;
     private $dbName;

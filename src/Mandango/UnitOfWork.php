@@ -20,7 +20,7 @@ use Mandango\Document\Document;
  *
  * @api
  */
-class UnitOfWork implements UnitOfWorkInterface
+class UnitOfWork
 {
     private $mandango;
     private $persist;

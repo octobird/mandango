@@ -15,14 +15,14 @@ use Mandango\Query;
 
 class QueryTest extends TestCase
 {
-    protected $identityMap;
+    protected $idMap;
     protected $query;
 
     protected function setUp()
     {
         parent::setUp();
 
-        $this->identityMap = $this->mandango->getRepository('Model\Article')->getIdentityMap();
+        $this->idMap = $this->mandango->getRepository('Model\Article')->idMap;
         $this->query = new \Model\ArticleQuery($this->mandango->getRepository('Model\Article'));
     }
 
@@ -33,17 +33,6 @@ class QueryTest extends TestCase
         $hash = $query->getHash();
         $this->assertInternalType('string', $hash);
         $this->assertSame($hash, $query->getHash());
-    }
-
-    public function testFieldsCache()
-    {
-        $this->assertNull($this->query->getFieldsCache());
-
-        $this->cache->set($this->query->getHash(), array('fields' => $fields = array('title' => 1, 'content' => 1)));
-        $this->assertSame($fields, $this->query->getFieldsCache());
-
-        $this->cache->remove($this->query->getHash());
-        $this->assertNull($this->query->getFieldsCache());
     }
 
     public function testCriteria()
@@ -312,7 +301,7 @@ class QueryTest extends TestCase
         $baseArticles = $this->createArticles(10);
 
         foreach ($baseArticles as $baseArticle) {
-            $this->assertFalse($this->identityMap->has($baseArticle->getId()));
+            $this->assertFalse($this->idMap->offsetExists($baseArticle->getId()));
         }
 
         $articles = $this->query->all();
@@ -322,7 +311,7 @@ class QueryTest extends TestCase
         }
 
         foreach ($articles as $article) {
-            $this->assertTrue($this->identityMap->has($article->getId()));
+            $this->assertTrue($this->idMap->offsetExists($article->getId()));
             $this->assertSame(array($this->query->getHash() => 1), $article->getQueryHashes());
         }
 
@@ -373,56 +362,56 @@ class QueryTest extends TestCase
         $articles[4]->setAuthor($authors[3])->save();
         $articles[6]->setAuthor($authors[6])->save();
 
-        $articleIdentityMap = $this->mandango->getRepository('Model\Article')->getIdentityMap();
-        $authorIdentityMap = $this->mandango->getRepository('Model\Author')->getIdentityMap();
+        $articleIdMap = $this->mandango->getRepository('Model\Article')->idMap;
+        $authorIdMap = $this->mandango->getRepository('Model\Author')->idMap;
 
         // without reference
-        $articleIdentityMap->clear();
-        $authorIdentityMap->clear();
+        $articleIdMap->clear();
+        $authorIdMap->clear();
 
         $this->mandango->getRepository('Model\Article')->createQuery()->all();
         foreach ($articles as $article) {
-            $this->assertTrue($articleIdentityMap->has($article->getId()));
+            $this->assertTrue($articleIdMap->offsetExists($article->getId()));
         }
         foreach ($authors as $author) {
-            $this->assertFalse($authorIdentityMap->has($author->getId()));
+            $this->assertFalse($authorIdMap->offsetExists($author->getId()));
         }
 
         // with reference, finding all
-        $articleIdentityMap->clear();
-        $authorIdentityMap->clear();
+        $articleIdMap->clear();
+        $authorIdMap->clear();
 
         $this->mandango->getRepository('Model\Article')->createQuery()->references(array('author'))->all();
         foreach ($articles as $article) {
-            $this->assertTrue($articleIdentityMap->has($article->getId()));
+            $this->assertTrue($articleIdMap->offsetExists($article->getId()));
         }
         foreach ($authors as $i => $author) {
             if (in_array($i, array(1, 3, 6))) {
-                $this->assertTrue($authorIdentityMap->has($author->getId()));
+                $this->assertTrue($authorIdMap->offsetExists($author->getId()));
             } else {
-                $this->assertFalse($authorIdentityMap->has($author->getId()));
+                $this->assertFalse($authorIdMap->offsetExists($author->getId()));
             }
         }
 
         // with reference, finding some
-        $articleIdentityMap->clear();
-        $authorIdentityMap->clear();
+        $articleIdMap->clear();
+        $authorIdMap->clear();
 
         $this->mandango->getRepository('Model\Article')->createQuery(array(
             '_id' => array('$nin' => array($articles[6]->getId()))
         ))->references(array('author'))->all();
         foreach ($articles as $i => $article) {
             if (6 == $i) {
-                $this->assertFalse($articleIdentityMap->has($article->getId()));
+                $this->assertFalse($articleIdMap->offsetExists($article->getId()));
             } else {
-                $this->assertTrue($articleIdentityMap->has($article->getId()));
+                $this->assertTrue($articleIdMap->offsetExists($article->getId()));
             }
         }
         foreach ($authors as $i => $author) {
             if (in_array($i, array(1, 3))) {
-                $this->assertTrue($authorIdentityMap->has($author->getId()));
+                $this->assertTrue($authorIdMap->offsetExists($author->getId()));
             } else {
-                $this->assertFalse($authorIdentityMap->has($author->getId()));
+                $this->assertFalse($authorIdMap->offsetExists($author->getId()));
             }
         }
     }
@@ -445,56 +434,56 @@ class QueryTest extends TestCase
         $articles[5]->getCategories()->add(array($categories[5]));
         $articles[5]->save();
 
-        $articleIdentityMap = $this->mandango->getRepository('Model\Article')->getIdentityMap();
-        $categoryIdentityMap = $this->mandango->getRepository('Model\Category')->getIdentityMap();
+        $articleIdMap = $this->mandango->getRepository('Model\Article')->idMap;
+        $categoryIdMap = $this->mandango->getRepository('Model\Category')->idMap;
 
         // without reference
-        $articleIdentityMap->clear();
-        $categoryIdentityMap->clear();
+        $articleIdMap->clear();
+        $categoryIdMap->clear();
 
         $this->mandango->getRepository('Model\Article')->createQuery()->all();
         foreach ($articles as $article) {
-            $this->assertTrue($articleIdentityMap->has($article->getId()));
+            $this->assertTrue($articleIdMap->offsetExists($article->getId()));
         }
         foreach ($categories as $category) {
-            $this->assertFalse($categoryIdentityMap->has($category->getId()));
+            $this->assertFalse($categoryIdMap->offsetExists($category->getId()));
         }
 
         // with references, finding some
-        $articleIdentityMap->clear();
-        $categoryIdentityMap->clear();
+        $articleIdMap->clear();
+        $categoryIdMap->clear();
 
         $this->mandango->getRepository('Model\Article')->createQuery()->references(array('categories'))->all();
         foreach ($articles as $article) {
-            $this->assertTrue($articleIdentityMap->has($article->getId()));
+            $this->assertTrue($articleIdMap->offsetExists($article->getId()));
         }
         foreach ($categories as $i => $category) {
             if (in_array($i, array(1, 2, 3, 5))) {
-                $this->assertTrue($categoryIdentityMap->has($category->getId()));
+                $this->assertTrue($categoryIdMap->offsetExists($category->getId()));
             } else {
-                $this->assertFalse($categoryIdentityMap->has($category->getId()));
+                $this->assertFalse($categoryIdMap->offsetExists($category->getId()));
             }
         }
 
         // with references, finding some
-        $articleIdentityMap->clear();
-        $categoryIdentityMap->clear();
+        $articleIdMap->clear();
+        $categoryIdMap->clear();
 
         $this->mandango->getRepository('Model\Article')->createQuery(array(
             '_id' => array('$nin' => array($articles[5]->getId())),
         ))->references(array('categories'))->all();
         foreach ($articles as $i => $article) {
             if (5 == $i) {
-                $this->assertFalse($articleIdentityMap->has($article->getId()));
+                $this->assertFalse($articleIdMap->offsetExists($article->getId()));
             } else {
-                $this->assertTrue($articleIdentityMap->has($article->getId()));
+                $this->assertTrue($articleIdMap->offsetExists($article->getId()));
             }
         }
         foreach ($categories as $i => $category) {
             if (in_array($i, array(1, 2, 3))) {
-                $this->assertTrue($categoryIdentityMap->has($category->getId()));
+                $this->assertTrue($categoryIdMap->offsetExists($category->getId()));
             } else {
-                $this->assertFalse($categoryIdentityMap->has($category->getId()));
+                $this->assertFalse($categoryIdMap->offsetExists($category->getId()));
             }
         }
     }
@@ -512,7 +501,7 @@ class QueryTest extends TestCase
         $articles = $this->createArticles(10);
 
         foreach ($articles as $article) {
-            $this->assertFalse($this->identityMap->has($article->getId()));
+            $this->assertFalse($this->idMap->offsetExists($article->getId()));
         }
 
         $queryArray = array();
@@ -527,7 +516,7 @@ class QueryTest extends TestCase
         $this->assertEquals($queryArray, $articleArray);
 
         foreach ($articles as $article) {
-            $this->assertTrue($this->identityMap->has($article->getId()));
+            $this->assertTrue($this->idMap->offsetExists($article->getId()));
         }
     }
 
@@ -536,15 +525,15 @@ class QueryTest extends TestCase
         $articles = $this->createArticles(10);
 
         foreach ($articles as $article) {
-            $this->assertFalse($this->identityMap->has($article->getId()));
+            $this->assertFalse($this->idMap->offsetExists($article->getId()));
         }
 
         $articleOne = array_shift($articles);
         $this->assertEquals($articleOne->toArray(), $this->query->one()->toArray());
 
-        $this->assertTrue($this->identityMap->has($articleOne->getId()));
+        $this->assertTrue($this->idMap->offsetExists($articleOne->getId()));
         foreach ($articles as $article) {
-            $this->assertFalse($this->identityMap->has($article->getId()));
+            $this->assertFalse($this->idMap->offsetExists($article->getId()));
         }
     }
 

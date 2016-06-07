@@ -11,8 +11,6 @@
 
 namespace Mandango;
 
-use Mandango\Cache\CacheInterface;
-
 /**
  * Mandango.
  *
@@ -25,7 +23,6 @@ class Mandango
     const VERSION = '1.0.0-DEV';
 
     private $metadataFactory;
-    private $cache;
     private $loggerCallable;
     private $unitOfWork;
     private $connections;
@@ -36,15 +33,13 @@ class Mandango
      * Constructor.
      *
      * @param \Mandango\MetadataFactory      $metadataFactory The metadata factory.
-     * @param \Mandango\Cache\CacheInterface $cache           The cache.
      * @param mixed                          $loggerCallable  The logger callable (optional, null by default).
      *
      * @api
      */
-    public function __construct(MetadataFactory $metadataFactory, CacheInterface $cache, $loggerCallable = null)
+    public function __construct(MetadataFactory $metadataFactory, $loggerCallable = null)
     {
         $this->metadataFactory = $metadataFactory;
-        $this->cache = $cache;
         $this->loggerCallable = $loggerCallable;
         $this->unitOfWork = new UnitOfWork($this);
         $this->connections = array();
@@ -61,18 +56,6 @@ class Mandango
     public function getMetadataFactory()
     {
         return $this->metadataFactory;
-    }
-
-    /**
-     * Returns the cache.
-     *
-     * @return CacheInterface The cache.
-     *
-     * @api
-     */
-    public function getCache()
-    {
-        return $this->cache;
     }
 
     /**
@@ -102,12 +85,12 @@ class Mandango
     /**
      * Set a connection.
      *
-     * @param string              $name       The connection name.
-     * @param ConnectionInterface $connection The connection.
+     * @param string     $name       The connection name.
+     * @param Connection $connection The connection.
      *
      * @api
      */
-    public function setConnection($name, ConnectionInterface $connection)
+    public function setConnection($name, Connection $connection)
     {
         if (null !== $this->loggerCallable) {
             $connection->setLoggerCallable($this->loggerCallable);
@@ -181,7 +164,7 @@ class Mandango
      *
      * @param string $name The connection name.
      *
-     * @return ConnectionInterface The connection.
+     * @return Connection The connection.
      *
      * @throws \InvalidArgumentException If the connection does not exists.
      *
@@ -235,7 +218,7 @@ class Mandango
     /**
      * Returns the default connection.
      *
-     * @return \Mandango\ConnectionInterface The default connection.
+     * @return \Mandango\Connection The default connection.
      *
      * @throws \RuntimeException If there is not default connection name.
      * @throws \RuntimeException If the default connection does not exists.

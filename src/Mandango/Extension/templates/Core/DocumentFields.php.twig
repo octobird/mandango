@@ -63,30 +63,6 @@
             ) {
                 $field = $this->_path . '.{{ field.dbName }}';
 
-                /* TODO
-                 * 
-                 * Suboptimal workaround to query cache bug with EmbeddedGroup:
-                 * only add path until the first numeric element, but not that element.
-                 * 
-                 * Example:
-                 * 
-                 * If path is "comments.1.infos", only "comments" is added to the cache.
-                 * 
-                 * A better solution is to mark EmbeddedGroups, so the Query class can use
-                 * MongoDB's array projection operator to project document fields inside
-                 * arrays.
-                 */
-                $path = [];
-                foreach (explode('.', $field) as $e) {
-                    if (is_numeric($e)) {
-                        break;
-                    }
-                    $path[] = $e;
-                }
-                $path = implode('.', $path);
-
-                $this->_root->addFieldCache($path);
-
                 // TODO: a document should be able to return it's collection and collection (shouldn't it?)
                 $collection = $this->getMandango()->getRepository(get_class($this->_root))->getCollection();
                 $data = $collection->findOne(array('_id' => $this->_root->getId()), array($field => 1));
@@ -108,7 +84,7 @@
             if ($this->isNew()) {
                 $this->data['fields']['{{ name }}'] = null;
             } elseif (!isset($this->data['fields']) || !array_key_exists('{{ name }}', $this->data['fields'])) {
-                $this->addFieldCache('{{ field.dbName }}');
+                // TODO: log a warning suggesting proper field hinting
                 $data = $this->getRepository()->getCollection()->findOne(array('_id' => $this->getId()), array('{{ field.dbName }}' => 1));
                 if (isset($data['{{ field.dbName }}'])) {
                     {{ mandango_type_to_php(field.type, "$data['" ~ field.dbName ~ "']", "$this->data['fields']['" ~ name ~ "']") }}

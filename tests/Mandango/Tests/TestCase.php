@@ -11,7 +11,6 @@
 
 namespace Mandango\Tests;
 
-use Mandango\Cache\ArrayCache;
 use Mandango\Connection;
 use Mandango\Mandango;
 use Mandango\Id\IdGeneratorContainer;
@@ -32,7 +31,6 @@ class TestCase extends \PHPUnit_Framework_TestCase
     protected $mandango;
     protected $unitOfWork;
     protected $metadataFactory;
-    protected $cache;
     protected $mongo;
     protected $db;
 
@@ -49,7 +47,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $this->globalConnection = static::$staticGlobalConnection;
 
         if (!static::$staticMandango) {
-            static::$staticMandango = new Mandango(new $this->metadataClass, new ArrayCache());
+            static::$staticMandango = new Mandango(new $this->metadataClass);
             static::$staticMandango->setConnection('default', $this->connection);
             static::$staticMandango->setConnection('global', $this->globalConnection);
             static::$staticMandango->setDefaultConnectionName('default');
@@ -59,10 +57,9 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $this->unitOfWork->clear();
         $this->unitOfWork->clear();
         $this->metadataFactory = $this->mandango->getMetadataFactory();
-        $this->cache = $this->mandango->getCache();
 
         foreach ($this->mandango->getAllRepositories() as $repository) {
-            $repository->getIdentityMap()->clear();
+            $repository->idMap->clear();
         }
 
         $this->mongo = $this->connection->getMongo();

@@ -8,10 +8,8 @@
         $repository = $this->getRepository();
         $mandango = $repository->getMandango();
         $documentClass = $repository->getDocumentClass();
-        $identityMap =& $repository->getIdentityMap()->allByReference();
         $isFile = $repository->isFile();
 {% if config_class.inheritable and 'single' == config_class.inheritable.type %}
-        $identityMaps = array();
         $mandango = $this->getRepository()->getMandango();
         $isFile = $this->getRepository()->isFile();
 
@@ -41,28 +39,20 @@
         foreach ($this->createCursor() as $id => $data) {
 {% if config_class.inheritable and 'single' == config_class.inheritable.type %}
             $documentClass = null;
-            $identityMap = null;
             if (isset($data['{{ config_class.inheritable.field }}'])) {
 {% for value, valueClass in config_class.inheritable.values %}
                 if ('{{ value }}' == $data['{{ config_class.inheritable.field }}']) {
-                    if (!isset($identityMaps['{{ value }}'])) {
-                        $identityMaps['{{ value }}'] = $mandango->getRepository('{{ valueClass }}')->getIdentityMap()->allByReference();
-                    }
                     $documentClass = '{{ valueClass }}';
-                    $identityMap = $identityMaps['{{ value }}'];
                 }
 {% endfor %}
             }
             if (null === $documentClass) {
-                if (!isset($identityMaps['_root'])) {
-                    $identityMaps['_root'] = $this->getRepository()->getIdentityMap()->allByReference();
-                }
                 $documentClass = '{{ class }}';
-                $identityMap = $identityMaps['_root'];
             }
 {% endif %}
-            if (isset($identityMap[$id])) {
-                $document = $identityMap[$id];
+            $rep = $documentClass::getRepository();
+            if ($rep->offsetExists($id)) {
+                $document = $rep->idMap[$id];
                 $document->addQueryHash($this->getHash());
             } else {
                 if ($isFile) {
@@ -76,7 +66,7 @@
                 $document = new $documentClass($mandango);
                 $document->setDocumentData($data);
 
-                $identityMap[$id] = $document;
+                $rep->idMap[$id] = $document;
             }
             $documents[$id] = $document;
         }
