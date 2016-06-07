@@ -102,20 +102,13 @@ class Mandango
     /**
      * Set a connection.
      *
-     * @param string              $name       The connection name.
-     * @param ConnectionInterface $connection The connection.
+     * @param string     $name       The connection name.
+     * @param Connection $connection The connection.
      *
      * @api
      */
-    public function setConnection($name, ConnectionInterface $connection)
+    public function setConnection($name, Connection $connection)
     {
-        if (null !== $this->loggerCallable) {
-            $connection->setLoggerCallable($this->loggerCallable);
-            $connection->setLogDefault(array('connection' => $name));
-        } else {
-            $connection->setLoggerCallable(null);
-        }
-
         $this->connections[$name] = $connection;
     }
 

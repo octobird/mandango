@@ -13,7 +13,6 @@ namespace Mandango\Tests;
 
 use Mandango\Repository as BaseRepository;
 use Mandango\Connection;
-use Mandango\ConnectionInterface;
 use Mandango\Mandango;
 use Mandango\Query;
 
@@ -60,7 +59,7 @@ class RepositoryMock extends Repository
         return $this->collection;
     }
 
-    public function setConnection(ConnectionInterface $connection)
+    public function setConnection(Connection $connection)
     {
         $this->connection = $connection;
 
@@ -116,8 +115,8 @@ class RepositoryTest extends TestCase
     public function testGetConnection()
     {
         $connections = array(
-            'local'  => new Connection($this->server, $this->dbName.'_local'),
-            'global' => new Connection($this->server, $this->dbName.'_global'),
+            'local'  => new Connection($this->uri, $this->dbName.'_local'),
+            'global' => new Connection($this->uri, $this->dbName.'_global'),
         );
 
         $mandango = new Mandango($this->metadataFactory, $this->cache);
@@ -131,12 +130,12 @@ class RepositoryTest extends TestCase
     public function testCollection()
     {
         $mandango = new Mandango($this->metadataFactory, $this->cache);
-        $connection = new Connection($this->server, $this->dbName.'_collection');
+        $connection = new Connection($this->uri, $this->dbName.'_collection');
         $mandango->setConnection('default', $connection);
         $mandango->setDefaultConnectionName('default');
 
         $collection = $mandango->getRepository('Model\Article')->getCollection();
-        $this->assertEquals($connection->getMongoDB()->selectCollection('articles'), $collection);
+        $this->assertEquals($connection->getDatabase()->selectCollection('articles'), $collection);
         $this->assertSame($collection, $mandango->getRepository('Model\Article')->getCollection());
     }
 
@@ -165,13 +164,13 @@ class RepositoryTest extends TestCase
     {
         $ids = $this->mandango->getRepository('Model\Article')->idsToMongo(array(
             $this->generateObjectId(),
-            $id1 = new \MongoId($this->generateObjectId()),
+            $id1 = new \MongoDB\BSON\ObjectID($this->generateObjectId()),
             $this->generateObjectId(),
         ));
         $this->assertSame(3, count($ids));
-        $this->assertInstanceOf('MongoId', $ids[0]);
+        $this->assertInstanceOf('\\MongoDB\\BSON\\ObjectID', $ids[0]);
         $this->assertSame($id1, $ids[1]);
-        $this->assertInstanceOf('MongoId', $ids[2]);
+        $this->assertInstanceOf('\\MongoDB\\BSON\\ObjectID', $ids[2]);
     }
 
     public function testFindByIdAndFindOneById()
@@ -383,19 +382,19 @@ class RepositoryTest extends TestCase
             ->method('find')
             ->will($this->returnValue($cursor));
 
-        $mongoDb = $this->createMongoDbMock();
-        $mongoDb
+        $database = $this->createMongoDatabaseMock();
+        $database
             ->expects($this->once())
             ->method('command')
             ->with($expectedCommand)
             ->will($this->returnValue($result));
-        $mongoDb
+        $database
             ->expects($this->once())
             ->method('selectCollection')
             ->with($resultCollectionName)
             ->will($this->returnValue($resultCollection));
 
-        $connection = $this->createConnectionMockWithMongoDb($mongoDb);
+        $connection = $this->createConnectionMockWithMongoDatabase($database);
         $repository = $this->createRepositoryMock()
             ->setCollectionName($collectionName)
             ->setConnection($connection);
@@ -432,19 +431,19 @@ class RepositoryTest extends TestCase
             ->method('find')
             ->will($this->returnValue($cursor));
 
-        $mongoDb = $this->createMongoDbMock();
-        $mongoDb
+        $database = $this->createMongoDatabaseMock();
+        $database
             ->expects($this->once())
             ->method('command')
             ->with($expectedCommand, $options)
             ->will($this->returnValue($result));
-        $mongoDb
+        $database
             ->expects($this->once())
             ->method('selectCollection')
             ->with($resultCollectionName)
             ->will($this->returnValue($resultCollection));
 
-        $connection = $this->createConnectionMockWithMongoDb($mongoDb);
+        $connection = $this->createConnectionMockWithMongoDatabase($database);
         $repository = $this->createRepositoryMock()
             ->setCollectionName($collectionName)
             ->setConnection($connection);
@@ -473,14 +472,14 @@ class RepositoryTest extends TestCase
         $results = array(new \DateTime());
         $result = array('ok' => true, 'results' => $results);
 
-        $mongoDb = $this->createMongoDbMock();
-        $mongoDb
+        $database = $this->createMongoDatabaseMock();
+        $database
             ->expects($this->once())
             ->method('command')
             ->with($expectedCommand)
             ->will($this->returnValue($result));
 
-        $connection = $this->createConnectionMockWithMongoDb($mongoDb);
+        $connection = $this->createConnectionMockWithMongoDatabase($database);
         $repository = $this->createRepositoryMock()
             ->setCollectionName($collectionName)
             ->setConnection($connection);
@@ -497,19 +496,19 @@ class RepositoryTest extends TestCase
 
         $result = array('ok' => false, 'errmsg' => $errmsg = 'foobarbarfooups');
 
-        $mongoDb = $this->createMongoDbMock();
-        $mongoDb
+        $database = $this->createMongoDatabaseMock();
+        $database
             ->expects($this->once())
             ->method('command')
             ->will($this->returnValue($result));
 
-        $connection = $this->getMock('Mandango\ConnectionInterface');
+        $connection = $this->getMock('Mandango\Connection');
         $connection
             ->expects($this->any())
-            ->method('getMongoDB')
+            ->method('getDatabase')
             ->will($this->returnValue($mongoDb));
 
-        $connection = $this->createConnectionMockWithMongoDb($mongoDb);
+        $connection = $this->createConnectionMockWithMongoDatabase($database);
         $repository = $this->createRepositoryMock()
             ->setCollectionName($collectionName)
             ->setConnection($connection);
@@ -517,9 +516,9 @@ class RepositoryTest extends TestCase
         $repository->mapReduce('foo', 'bar', array('inline' => 1));
     }
 
-    private function createMongoDbMock()
+    private function createMongoDatabaseMock()
     {
-        return $this->getMockBuilder('MongoDB')
+        return $this->getMockBuilder('\\MongoDB\\Database')
             ->disableOriginalConstructor()
             ->getMock();
     }
@@ -531,13 +530,13 @@ class RepositoryTest extends TestCase
             ->getMock();
     }
 
-    private function createConnectionMockWithMongoDb($mongoDb)
+    private function createConnectionMockWithMongoDatabase($database)
     {
-        $connection = $this->getMock('Mandango\ConnectionInterface');
+        $connection = $this->getMock('Mandango\Connection');
         $connection
             ->expects($this->any())
-            ->method('getMongoDB')
-            ->will($this->returnValue($mongoDb));
+            ->method('getDatabase')
+            ->will($this->returnValue($database));
 
         return $connection;
     }

@@ -17,37 +17,37 @@ class ConnectionTest extends TestCase
 {
     public function testConnection()
     {
-        $connection = new Connection($this->server, $this->dbName);
+        $connection = new Connection($this->uri, $this->dbName);
 
-        $mongo   = $connection->getMongo();
-        $mongoDB = $connection->getMongoDB();
+        $client   = $connection->getClient();
+        $database = $connection->getDatabase();
 
-        $this->assertInstanceOf('\MongoClient', $mongo);
-        $this->assertInstanceOf('\MongoDB', $mongoDB);
-        $this->assertSame($this->dbName, $mongoDB->__toString());
+        $this->assertInstanceOf('\MongoDB\Client', $client);
+        $this->assertInstanceOf('\MongoDB\Database', $database);
+        $this->assertSame($this->dbName, $database->__toString());
 
-        $this->assertSame($mongo, $connection->getMongo());
-        $this->assertSame($mongoDB, $connection->getMongoDB());
+        $this->assertSame($client, $connection->getClient());
+        $this->assertSame($database, $connection->getDatabase());
     }
 
     public function testGetters()
     {
         $connection = new Connection('mongodb://127.0.0.1:27017', 'databaseName', array('connect' => true));
 
-        $this->assertSame('mongodb://127.0.0.1:27017', $connection->getServer());
+        $this->assertSame('mongodb://127.0.0.1:27017', $connection->getUri());
         $this->assertSame('databaseName', $connection->getDbName());
         $this->assertSame(array('connect' => true), $connection->getOptions());
     }
 
-    public function testSetServer()
+    public function testSetUri()
     {
-        $connection = new Connection($this->server, $this->dbName);
-        $connection->setServer($server = 'mongodb://localhost:27017');
-        $this->assertSame($server, $connection->getServer());
+        $connection = new Connection($this->uri, $this->dbName);
+        $connection->setUri($uri = 'mongodb://localhost:27017');
+        $this->assertSame($uri, $connection->getUri());
 
-        $connection->getMongo();
+        $connection->getClient();
         try {
-            $connection->setServer($this->server);
+            $connection->setUri($this->uri);
             $this->fail();
         } catch (\Exception $e) {
             $this->assertInstanceOf('LogicException', $e);
@@ -56,11 +56,11 @@ class ConnectionTest extends TestCase
 
     public function testSetDbName()
     {
-        $connection = new Connection($this->server, $this->dbName);
+        $connection = new Connection($this->uri, $this->dbName);
         $connection->setDbName($dbName = 'mandango_testing');
         $this->assertSame($dbName, $connection->getDbName());
 
-        $connection->getMongoDB();
+        $connection->getDatabase();
         try {
             $connection->setDbName($this->dbName);
             $this->fail();
@@ -71,77 +71,16 @@ class ConnectionTest extends TestCase
 
     public function testSetOptions()
     {
-        $connection = new Connection($this->server, $this->dbName);
+        $connection = new Connection($this->uri, $this->dbName);
         $connection->setOptions($options = array('connect' => true));
         $this->assertSame($options, $connection->getOptions());
 
-        $connection->getMongo();
+        $connection->getClient();
         try {
             $connection->setOptions(array());
             $this->fail();
         } catch (\Exception $e) {
             $this->assertInstanceOf('LogicException', $e);
         }
-    }
-
-    public function testLoggerCallable()
-    {
-        $connection = new Connection($this->server, $this->dbName);
-
-        $connection->setLoggerCallable($loggerCallable = array($this, 'log'));
-        $this->assertSame($loggerCallable, $connection->getLoggerCallable());
-    }
-
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testSetLoggerCallableWhenTheConnectionHasAlreadyTheMongo()
-    {
-        $connection = new Connection($this->server, $this->dbName);
-        $connection->getMongo();
-
-        $connection->setLoggerCallable($loggerCallable = array($this, 'log'));
-    }
-
-    public function testLogDefault()
-    {
-        $connection = new Connection($this->server, $this->dbName);
-
-        $connection->setLogDefault($logDefault = array('foo' => 'bar'));
-        $this->assertSame($logDefault, $connection->getLogDefault());
-    }
-
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testSetLogDefaultWhenTheConnectionHasAlreadyTheMongo()
-    {
-        $connection = new Connection($this->server, $this->dbName);
-        $connection->getMongo();
-
-        $connection->setLogDefault($logDefault = array('foo' => 'bar'));
-    }
-
-    public function testMandangoLoggerWithLoggerCallable()
-    {
-        $connection = new Connection($this->server, $this->dbName);
-        $connection->setLoggerCallable($loggerCallable = array($this, 'log'));
-        $connection->setLogDefault($logDefault = array('foo' => 'bar'));
-
-        $mongo   = $connection->getMongo();
-        $mongoDB = $connection->getMongoDB();
-
-        $this->assertInstanceOf('\Mandango\Logger\LoggableMongo', $mongo);
-        $this->assertInstanceOf('\Mandango\Logger\LoggableMongoDB', $mongoDB);
-        $this->assertSame($loggerCallable, $mongo->getLoggerCallable());
-        $this->assertSame($logDefault, $mongo->getLogDefault());
-        $this->assertSame($this->dbName, $mongoDB->__toString());
-
-        $this->assertSame($mongo, $connection->getMongo());
-        $this->assertSame($mongoDB, $connection->getMongoDB());
-    }
-
-    public function log()
-    {
     }
 }

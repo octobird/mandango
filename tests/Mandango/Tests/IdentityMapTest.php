@@ -19,7 +19,7 @@ class IdentityMapTest extends TestCase
     {
         $articles = array();
         for ($i = 1; $i <= 10; $i ++) {
-            $articles[$i] = $this->mandango->create('Model\Article')->setId(new \MongoId($this->generateObjectId()));
+            $articles[$i] = $this->mandango->create('Model\Article')->setId(new \MongoDB\BSON\ObjectID($this->generateObjectId()));
         }
 
         $identityMap = new IdentityMap();

@@ -68,7 +68,7 @@ class QueryTest extends TestCase
         $this->assertSame($query, $query->mergeCriteria($criteria1));
         $this->assertSame($criteria1, $query->getCriteria());
 
-        $criteria2 = array('author' => new \MongoId($this->generateObjectId()));
+        $criteria2 = array('author' => new \MongoDB\BSON\ObjectID($this->generateObjectId()));
         $query->mergeCriteria($criteria2);
         $this->assertSame(array('is_active' => true, 'author' => $criteria2['author']), $query->getCriteria());
 
@@ -345,7 +345,7 @@ class QueryTest extends TestCase
                 ),
             ),
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insert($articleRaw);
+        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $article = $this->mandango->getRepository('Model\Article')->createQuery()->fields(array('title' => 1, 'source.name' => 1))->one();
 

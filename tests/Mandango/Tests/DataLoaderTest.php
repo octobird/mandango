@@ -147,7 +147,7 @@ class DataLoaderTest extends TestCase
     public function testLoadPrune()
     {
         foreach ($this->mandango->getConnections() as $connection) {
-            $connection->getMongoDB()->drop();
+            $connection->getDatabase()->drop();
         }
 
         $data = array(

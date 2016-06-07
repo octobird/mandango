@@ -19,7 +19,7 @@ class CoreRepositoryTest extends TestCase
     {
         $id = $this->generateObjectId();
         $idToMongo = $this->mandango->getRepository('Model\Article')->idToMongo($id);
-        $this->assertInstanceOf('MongoId', $idToMongo);
+        $this->assertInstanceOf('MongoDB\\BSON\\ObjectID', $idToMongo);
     }
 
     public function testSaveInsertingNotModified()

@@ -126,21 +126,6 @@ class MandangoTest extends TestCase
         $mandango->getDefaultConnection();
     }
 
-    public function testSetConnectionLoggerCallable()
-    {
-        $mandango = new Mandango($this->metadataFactory, $this->cache);
-        $connection = new Connection($this->server, $this->dbName);
-        $mandango->setConnection('default', $connection);
-        $this->assertNull($connection->getLoggerCallable());
-        $this->assertNull($connection->getLogDefault());
-
-        $mandango = new Mandango($this->metadataFactory, $this->cache, $loggerCallable = function() {});
-        $connection = new Connection($this->server, $this->dbName);
-        $mandango->setConnection('default', $connection);
-        $this->assertSame($loggerCallable, $connection->getLoggerCallable());
-        $this->assertSame(array('connection' => 'default'), $connection->getLogDefault());
-    }
-
     public function testDefaultConnectionName()
     {
         $mandango = new Mandango($this->metadataFactory, $this->cache);

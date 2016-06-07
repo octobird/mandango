@@ -86,7 +86,7 @@
 {% else %}
         $array = array();
         $id = $this->getId();
-        if ($id instanceof \MongoId) {
+        if ($id instanceof \MongoDB\BSON\ObjectID) {
             $id = $id->{'$id'};
         }
 

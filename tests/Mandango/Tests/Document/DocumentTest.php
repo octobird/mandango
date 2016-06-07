@@ -25,7 +25,7 @@ class DocumentTest extends TestCase
         $document = new Document($this->mandango);
         $this->assertNull($document->getId());
 
-        $id = new \MongoId($this->generateObjectId());
+        $id = new \MongoDB\BSON\ObjectID($this->generateObjectId());
         $this->assertSame($document, $document->setId($id));
         $this->assertSame($id, $document->getId());
     }

@@ -28,7 +28,7 @@ class CoreFieldAliasTest extends TestCase
         $articleRaw = array(
             'basatos' => 123
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insert($articleRaw);
+        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $article = $this->mandango->create('Model\Article');
         $article->setId($articleRaw['_id']);
@@ -43,7 +43,7 @@ class CoreFieldAliasTest extends TestCase
                 'desde' => 123,
             ),
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insert($articleRaw);
+        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $article = $this->mandango->create('Model\Article');
         $article->setId($articleRaw['_id']);
@@ -56,7 +56,7 @@ class CoreFieldAliasTest extends TestCase
         $articleRaw = array(
             'basatos' => '123',
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insert($articleRaw);
+        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $query = $this->mandango->getRepository('Model\Article')->createQuery();
         $article = $query->one();
@@ -73,7 +73,7 @@ class CoreFieldAliasTest extends TestCase
                 'desde' => '123',
             ),
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insert($articleRaw);
+        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $query = $this->mandango->getRepository('Model\Article')->createQuery();
         $article = $query->one();
@@ -104,7 +104,7 @@ class CoreFieldAliasTest extends TestCase
     {
         $article = $this->mandango->create('Model\Article');
         $article->setDocumentData(array(
-            '_id' => new \MongoId($this->generateObjectId()),
+            '_id' => new \MongoDB\BSON\ObjectID($this->generateObjectId()),
             'basatos' => '234',
         ));
 
@@ -138,7 +138,7 @@ class CoreFieldAliasTest extends TestCase
     {
         $article = $this->mandango->create('Model\Article');
         $article->setDocumentData(array(
-            '_id' => new \MongoId($this->generateObjectId()),
+            '_id' => new \MongoDB\BSON\ObjectID($this->generateObjectId()),
             'source' => array(
                 'desde' => '234',
             ),

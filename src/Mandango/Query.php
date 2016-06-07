@@ -548,6 +548,45 @@ abstract class Query implements \Countable, \IteratorAggregate
         return $results ? array_shift($results) : null;
     }
 
+    private function createOptions()
+    {
+        $options = ['modifiers' => []];
+
+        if (null !== $this->sort) {
+            $options['sort'] = $this->sort;
+        }
+
+        if (null !== $this->limit) {
+            $options['limit'] = $this->limit;
+        }
+
+        if (null !== $this->skip) {
+            $options['skip'] = $this->skip;
+        }
+
+        if (null !== $this->batchSize) {
+            $options['batchSize'] = $this->batchSize;
+        }
+
+        if (null !== $this->hint) {
+            $options['modifiers']['$hint'] = $this->snapshot;
+        }
+
+        if (null !== $this->slaveOkay) {
+            $options['slaveOk'] = $this->slaveOkay;
+        }
+
+        if ($this->snapshot) {
+            $options['modifiers']['$snapshot'] = $this->snapshot;
+        }
+
+        if (null !== $this->timeout) {
+            $options['modifiers']['$maxTimeMS'] = $this->timeout;
+        }
+
+        return $options;
+    }
+
     /**
      * Count the number of results of the query.
      *
@@ -557,7 +596,7 @@ abstract class Query implements \Countable, \IteratorAggregate
      */
     public function count()
     {
-        return $this->createCursor()->count();
+        return $this->repository->getCollection()->count($this->criteria, $this->createOptions());
     }
 
     /**
@@ -567,40 +606,6 @@ abstract class Query implements \Countable, \IteratorAggregate
      */
     public function createCursor()
     {
-        $cursor = $this->repository->getCollection()->find($this->criteria, $this->fields);
-
-        if (null !== $this->sort) {
-            $cursor->sort($this->sort);
-        }
-
-        if (null !== $this->limit) {
-            $cursor->limit($this->limit);
-        }
-
-        if (null !== $this->skip) {
-            $cursor->skip($this->skip);
-        }
-
-        if (null !== $this->batchSize) {
-            $cursor->batchSize($this->batchSize);
-        }
-
-        if (null !== $this->hint) {
-            $cursor->hint($this->hint);
-        }
-
-        if (null !== $this->slaveOkay) {
-            $cursor->slaveOkay($this->slaveOkay);
-        }
-
-        if ($this->snapshot) {
-            $cursor->snapshot();
-        }
-
-        if (null !== $this->timeout) {
-            $cursor->timeout($this->timeout);
-        }
-
-        return $cursor;
+        return $this->repository->getCollection()->find($this->criteria, $this->fields, $this->createOptions());
     }
 }

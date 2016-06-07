@@ -133,7 +133,7 @@ abstract class Repository
     /**
      * Returns the connection.
      *
-     * @return \Mandango\ConnectionInterface The connection.
+     * @return \Mandango\Connection The connection.
      *
      * @api
      */
@@ -162,10 +162,10 @@ abstract class Repository
         if (!$this->collection) {
             // gridfs
             if ($this->isFile) {
-                $this->collection = $this->getConnection()->getMongoDB()->getGridFS($this->collectionName);
+                $this->collection = $this->getConnection()->getDatabase()->getGridFS($this->collectionName);
             // normal
             } else {
-                $this->collection = $this->getConnection()->getMongoDB()->selectCollection($this->collectionName);
+                $this->collection = $this->getConnection()->getDatabase()->selectCollection($this->collectionName);
             }
         }
 
@@ -405,16 +405,16 @@ abstract class Repository
             return $result['results'];
         }
 
-        return $this->getMongoDB()->selectCollection($result['result'])->find();
+        return $this->getDatabase()->selectCollection($result['result'])->find();
     }
 
     private function command($command, $options = array())
     {
-        return $this->getMongoDB()->command($command, $options);
+        return $this->getDatabase()->command($command, $options);
     }
 
-    private function getMongoDB()
+    private function getDatabase()
     {
-        return $this->getConnection()->getMongoDB();
+        return $this->getConnection()->getDatabase();
     }
 }

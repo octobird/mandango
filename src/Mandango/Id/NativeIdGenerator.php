@@ -25,7 +25,7 @@ class NativeIdGenerator extends BaseIdGenerator
      */
     public function getCode(array $options)
     {
-        return '%id% = new \MongoId();';
+        return '%id% = new \\MongoDB\\BSON\\ObjectID();';
     }
 
     /**
@@ -34,8 +34,8 @@ class NativeIdGenerator extends BaseIdGenerator
     public function getToMongoCode()
     {
         return <<<EOF
-if (!%id% instanceof \MongoId) {
-    %id% = new \MongoId(%id%);
+if (!%id% instanceof \MongoDB\BSON\ObjectID) {
+    %id% = new \MongoDB\BSON\ObjectID(%id%);
 }
 EOF;
     }

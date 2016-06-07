@@ -24,7 +24,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     static protected $staticMandango;
 
     protected $metadataClass = 'Model\Mapping\Metadata';
-    protected $server = 'mongodb://localhost:27017';
+    protected $uri = 'mongodb://localhost:27017';
     protected $dbName = 'mandango_tests';
 
     protected $connection;
@@ -33,18 +33,18 @@ class TestCase extends \PHPUnit_Framework_TestCase
     protected $unitOfWork;
     protected $metadataFactory;
     protected $cache;
-    protected $mongo;
-    protected $db;
+    protected $client;
+    protected $database;
 
     protected function setUp()
     {
         if (!static::$staticConnection) {
-            static::$staticConnection = new Connection($this->server, $this->dbName);
+            static::$staticConnection = new Connection($this->uri, $this->dbName);
         }
         $this->connection = static::$staticConnection;
 
         if (!static::$staticGlobalConnection) {
-            static::$staticGlobalConnection = new Connection($this->server, $this->dbName.'_global');
+            static::$staticGlobalConnection = new Connection($this->uri, $this->dbName.'_global');
         }
         $this->globalConnection = static::$staticGlobalConnection;
 
@@ -65,11 +65,15 @@ class TestCase extends \PHPUnit_Framework_TestCase
             $repository->getIdentityMap()->clear();
         }
 
-        $this->mongo = $this->connection->getMongo();
-        $this->db = $this->connection->getMongoDB();
+        $this->client = $this->connection->getClient();
+        $this->database = $this->connection->getDatabase();
 
-        foreach ($this->db->listCollections() as $collection) {
-            $collection->deleteIndexes();
+        foreach ($this->database->listCollections() as $collectionInfo) {
+            if (substr($collectionInfo->getName(), 0, 7) === 'system.') {
+                continue;
+            }
+            $collection = $this->database->selectCollection($collectionInfo->getName());
+            $collection->dropIndexes();
             $collection->drop();
         }
     }

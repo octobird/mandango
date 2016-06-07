@@ -36,7 +36,7 @@ class CoreIdGeneratorTest extends TestCase
         $document->setName('ups');
         $document->save();
 
-        $this->assertInstanceOf('MongoId', $document->getId());
+        $this->assertInstanceOf('\\MongoDB\\BSON\\ObjectID', $document->getId());
     }
 
     public function testNativeIdGenerator()
@@ -45,7 +45,7 @@ class CoreIdGeneratorTest extends TestCase
         $document->setName('ups');
         $document->save();
 
-        $this->assertInstanceOf('MongoId', $document->getId());
+        $this->assertInstanceOf('MongoDB\\BSON\\ObjectID', $document->getId());
     }
 
     public function testSequenceIdGenerator()

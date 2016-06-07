@@ -31,7 +31,7 @@ class DateType extends Type
             $value = strtotime($value);
         }
 
-        return new \MongoDate($value);
+        return new \MongoDB\BSON\UTCDateTime($value);
     }
 
     /**
@@ -50,7 +50,7 @@ class DateType extends Type
      */
     public function toMongoInString()
     {
-        return '%to% = %from%; if (%to% instanceof \DateTime) { %to% = %from%->getTimestamp(); } elseif (is_string(%to%)) { %to% = strtotime(%from%); } %to% = new \MongoDate(%to%);';
+        return '%to% = %from%; if (%to% instanceof \DateTime) { %to% = %from%->getTimestamp(); } elseif (is_string(%to%)) { %to% = strtotime(%from%); } %to% = new \MongoDB\BSON\UTCDateTime(%to%);';
     }
 
     /**

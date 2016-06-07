@@ -142,7 +142,7 @@ class CoreSingleInheritanceTest extends TestCase
             'default' => 234,
         ), $formElement->queryForSave());
         $formElement->clearModified();
-        $formElement->setId(new \MongoId($this->generateObjectId()));
+        $formElement->setId(new \MongoDB\BSON\ObjectID($this->generateObjectId()));
         $formElement->setIsNew(false);
         $this->assertSame(array(), $formElement->queryForSave());
 
@@ -153,7 +153,7 @@ class CoreSingleInheritanceTest extends TestCase
             'default' => '456',
         ), $textareaFormElement->queryForSave());
         $textareaFormElement->clearModified();
-        $textareaFormElement->setId(new \MongoId($this->generateObjectId()));
+        $textareaFormElement->setId(new \MongoDB\BSON\ObjectID($this->generateObjectId()));
         $textareaFormElement->setIsNew(false);
         $this->assertSame(array(), $textareaFormElement->queryForSave());
 
