@@ -24,9 +24,9 @@ class CoreIdGeneratorTest extends TestCase
 
         $this->assertEquals(
             array('_id' => 'my_id', 'name' => 'ups'),
-            $document->getRepository()->getCollection()->findOne(
+            iterator_to_array($document->getRepository()->getCollection()->findOne(
                 array('_id' => 'my_id')
-            )
+            ))
         );
     }
 
@@ -92,24 +92,6 @@ class CoreIdGeneratorTest extends TestCase
         $document3->setName('ups');
         $document3->save();
         $this->assertSame(-3, $document3->getId());
-    }
-
-    public function testSequenceIdGeneratorStart()
-    {
-        $document1 = $this->mandango->create('Model\SequenceIdGeneratorStart');
-        $document1->setName('ups');
-        $document1->save();
-        $this->assertSame(2000, $document1->getId());
-
-        $document2 = $this->mandango->create('Model\SequenceIdGeneratorStart');
-        $document2->setName('ups');
-        $document2->save();
-        $this->assertSame(2001, $document2->getId());
-
-        $document3 = $this->mandango->create('Model\SequenceIdGeneratorStart');
-        $document3->setName('ups');
-        $document3->save();
-        $this->assertSame(2002, $document3->getId());
     }
 
     public function testIdGeneratorSingleInheritance()

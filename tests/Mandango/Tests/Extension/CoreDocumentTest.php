@@ -614,11 +614,11 @@ class CoreDocumentTest extends TestCase
         $articles[5]->setAuthor($authors[6])->save();
 
         $this->assertSame(array(
-            $articles[2]->getId()->__toString() => $articles[2],
-            $articles[3]->getId()->__toString() => $articles[3],
+            $articles[2],
+            $articles[3],
         ), $authors[3]->getArticles()->all());
         $this->assertSame(array(
-            $articles[5]->getId()->__toString() => $articles[5],
+            $articles[5],
         ), $authors[6]->getArticles()->all());
         $this->assertSame(0, $authors[5]->getArticles()->count());
     }
@@ -649,11 +649,11 @@ class CoreDocumentTest extends TestCase
         $articles[5]->save();
 
         $this->assertSame(array(
-            $articles[2]->getId()->__toString() => $articles[2],
-            $articles[3]->getId()->__toString() => $articles[3],
+            $articles[2],
+            $articles[3],
         ), $categories[3]->getArticles()->all());
         $this->assertSame(array(
-            $articles[5]->getId()->__toString() => $articles[5],
+            $articles[5],
         ), $categories[6]->getArticles()->all());
         $this->assertSame(0, $categories[5]->getArticles()->count());
     }

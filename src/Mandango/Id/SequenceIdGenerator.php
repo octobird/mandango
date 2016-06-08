@@ -41,14 +41,15 @@ class SequenceIdGenerator extends BaseIdGenerator
         }
 
         return <<<EOF
-\$commandResult = \$repository->getConnection()->getDatabase()->command(array(
+%id% = \$commandResult = iterator_to_array(\$repository->getConnection()->getDatabase()->command([
     'findandmodify' => 'mandango_sequence_id_generator',
     'query'         => array('_id' => \$repository->getCollectionName()),
-    'update'        => array('\$inc' => array('sequence' => $increment)),
+    'update'        => [
+        '\$inc' => ['sequence' => $increment]
+    ],
     'new'           => true,
     'upsert'        => true
-));
-%id% = \$commandResult->toArray()[0]['value']['sequence'];
+]))[0]['value']['sequence'];
 EOF;
     }
 

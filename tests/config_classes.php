@@ -378,12 +378,6 @@ return array(
             'name' => 'string',
         )
     ),
-    'Model\SequenceIdGeneratorStart' => array(
-        'idGenerator' => array('name' => 'sequence', 'options' => array('start' => 2000)),
-        'fields' => array(
-            'name' => 'string',
-        )
-    ),
     'Model\IdGeneratorSingleInheritanceGrandParent' => array(
         'inheritable' => array('type' => 'single'),
         'idGenerator' => 'sequence',
