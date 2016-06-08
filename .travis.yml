@@ -5,10 +5,10 @@ services: mongodb
 sudo: false
 
 php:
+  - 5.5
   - 5.6
   - 7.0
-  - hhvm-3.11
-  - hhvm-3.12
+  - hhvm
 
 before_script:
   - yes "" | pecl install mongodb
