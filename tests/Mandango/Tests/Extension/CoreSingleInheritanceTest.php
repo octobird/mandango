@@ -202,14 +202,14 @@ class CoreSingleInheritanceTest extends TestCase
         }
 
         $this->assertSame(16, $this->mandango->getRepository('Model\Element')->count());
-        $this->assertSame(3, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoRegex('/^Textarea/'))));
-        $this->assertSame(8, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoRegex('/^Text/'))));
-        $this->assertSame(1, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoRegex('/^Radio/'))));
-        $this->assertSame(5, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoRegex('/^Form/'))));
+        $this->assertSame(3, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoDB\BSON\Regex('/^Textarea/', ''))));
+        $this->assertSame(8, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoDB\BSON\Regex('/^Text/', ''))));
+        $this->assertSame(1, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoDB\BSON\Regex('/^Radio/', ''))));
+        $this->assertSame(5, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoDB\BSON\Regex('/^Form/', ''))));
         $this->assertSame(9, $this->mandango->getRepository('Model\FormElement')->count());
-        $this->assertSame(3, $this->mandango->getRepository('Model\FormElement')->count(array('label' => new \MongoRegex('/^Text/'))));
+        $this->assertSame(3, $this->mandango->getRepository('Model\FormElement')->count(array('label' => new \MongoDB\BSON\Regex('/^Text/', ''))));
         $this->assertSame(3, $this->mandango->getRepository('Model\TextareaFormElement')->count());
-        $this->assertSame(0, $this->mandango->getRepository('Model\TextareaFormElement')->count(array('label' => new \MongoRegex('/^R/'))));
+        $this->assertSame(0, $this->mandango->getRepository('Model\TextareaFormElement')->count(array('label' => new \MongoDB\BSON\Regex('/^R/', ''))));
         $this->assertSame(1, $this->mandango->getRepository('Model\RadioFormElement')->count());
         $this->assertSame(5, $this->mandango->getRepository('Model\TextElement')->count());
     }
@@ -241,7 +241,7 @@ class CoreSingleInheritanceTest extends TestCase
         $this->mandango->getRepository('Model\FormElement')->update(array('label' => 'Textarea0'), $newObject);
         $this->assertSame(1, $this->mandango->getRepository('Model\Element')->getCollection()->count($criteria));
         $this->assertSame(1, $this->mandango->getRepository('Model\FormElement')->getCollection()->count($criteria));
-        $this->mandango->getRepository('Model\TextareaFormElement')->update(array('label' => new \MongoRegex('/^FormElement/')), $newObject);
+        $this->mandango->getRepository('Model\TextareaFormElement')->update(array('label' => new \MongoDB\BSON\Regex('/^FormElement/', '')), $newObject);
         $this->assertSame(1, $this->mandango->getRepository('Model\FormElement')->getCollection()->count($criteria));
         $this->mandango->getRepository('Model\TextareaFormElement')->update(array(), $newObject);
         $this->assertSame(1, $this->mandango->getRepository('Model\TextareaFormElement')->getCollection()->count($criteria));
@@ -272,7 +272,7 @@ class CoreSingleInheritanceTest extends TestCase
         $this->mandango->getRepository('Model\FormElement')->remove(array('label' => 'Textarea0'));
         $this->assertSame(10, $this->mandango->getRepository('Model\Element')->getCollection()->count());
         $this->assertSame(10, $this->mandango->getRepository('Model\FormElement')->getCollection()->count());
-        $this->mandango->getRepository('Model\TextareaFormElement')->remove(array('label' => new \MongoRegex('/^FormElement/')));
+        $this->mandango->getRepository('Model\TextareaFormElement')->remove(array('label' => new \MongoDB\BSON\Regex('/^FormElement/', '')));
         $this->assertSame(10, $this->mandango->getRepository('Model\FormElement')->getCollection()->count());
         $this->mandango->getRepository('Model\TextareaFormElement')->remove();
         $this->assertSame(8, $this->mandango->getRepository('Model\TextareaFormElement')->getCollection()->count());

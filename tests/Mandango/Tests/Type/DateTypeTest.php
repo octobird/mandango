@@ -38,7 +38,7 @@ class DateTypeTest extends TestCase
         $date = new \DateTime();
         $date->setTimestamp($time);
 
-        $this->assertEquals($date, $type->toPHP(new \MongoDB\BSON\UTCDateTime($time)));
+        $this->assertEquals($date, $type->toPHP(new \MongoDB\BSON\UTCDateTime($time * 1000)));
     }
 
     public function testToMongoInString()
@@ -66,6 +66,6 @@ class DateTypeTest extends TestCase
         $date = new \DateTime();
         $date->setTimestamp($time);
 
-        $this->assertEquals($date, $function(new \MongoDB\BSON\UTCDateTime($time)));
+        $this->assertEquals($date, $function(new \MongoDB\BSON\UTCDateTime($time * 1000)));
     }
 }

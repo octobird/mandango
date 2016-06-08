@@ -57,8 +57,8 @@ class CoreRepositoryFixMissingReferencesTest extends TestCase
         $article2->refresh();
         $article3->refresh();
 
-        $this->assertEquals(array($category3->getId()), $article1->getCategoryIds());
-        $this->assertEquals(array($category2->getId()), $article2->getCategoryIds());
-        $this->assertEquals(array(), $article3->getCategoryIds());
+        $this->assertEquals(array($category3->getId()), $article1->getCategoryIds()->getArrayCopy());
+        $this->assertEquals(array($category2->getId()), $article2->getCategoryIds()->getArrayCopy());
+        $this->assertEquals(array(), $article3->getCategoryIds()->getArrayCopy());
     }
 }

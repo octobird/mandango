@@ -109,16 +109,22 @@ class TestCase extends \PHPUnit_Framework_TestCase
         return $this->mandango->create('Model\Article')->setTitle($title)->save();
     }
 
-    protected function createArticles($nb, $idAsKey = true)
+    protected function indexArray($indexFieldName, $array)
     {
-        $articles = array();
+        $ret = [];
+        foreach ($array as $e)
+        {
+            $ret[$a[$indexFieldName]] = $a;
+        }
+        return $ret;
+    }
+
+    protected function createArticles($nb)
+    {
+        $articles = [];
         foreach ($this->createArticlesRaw($nb) as $articleRaw) {
             $article = $this->mandango->create('Model\Article')->setId($articleRaw['_id'])->setIsNew(false);
-            if ($idAsKey) {
-                $articles[$article->getId()->__toString()] = $article;
-            } else {
-                $articles[] = $article;
-            }
+            $articles[] = $article;
         }
 
         return $articles;
@@ -148,7 +154,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
         $document
             ->getRepository()
             ->getCollection()
-            ->remove(array('_id' => $document->getId()));
+            ->deleteOne(array('_id' => $document->getId()));
     }
 
     protected function documentExists($document)

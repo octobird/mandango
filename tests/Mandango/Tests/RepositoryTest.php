@@ -179,8 +179,8 @@ class RepositoryTest extends TestCase
         $this->assertEquals($article3, $repository->findOneById($articles[3]->getId())->toArray());
 
         $articles1 = [];
-        foreach($repository->findById($ids1 = array($articles[1]->getId(), $articles[3]->getId(), $articles[4]->getId())) as $id => $document) {
-            $articles1[$id] = $document->toArray();
+        foreach($repository->findById($ids1 = array($articles[1]->getId(), $articles[3]->getId(), $articles[4]->getId())) as $document) {
+            $articles1[$document->getId()->__toString()] = $document->toArray();
         }
 
         $identityMap->clear();
@@ -191,8 +191,8 @@ class RepositoryTest extends TestCase
         ), $articles1);
 
         $articles2 = [];
-        foreach($repository->findById($ids2 = array($articles[1]->getId(), $articles[4]->getId(), $articles[7]->getId())) as $id => $document) {
-            $articles2[$id] = $document->toArray();
+        foreach($repository->findById($ids2 = array($articles[1]->getId(), $articles[4]->getId(), $articles[7]->getId())) as $document) {
+            $articles2[$document->getId()->__toString()] = $document->toArray();
         }
 
         $this->assertEquals(array(
@@ -224,12 +224,12 @@ class RepositoryTest extends TestCase
         ));
 
         $array1 = array();
-        foreach ($articlesWithIds as $id => $document) {
-            $array1[$id] = $document->toArray();
+        foreach ($articlesWithIds as $document) {
+            $array1[$document->getId()->__toString()] = $document->toArray();
         }
         $array2 = array();
-        foreach ($results as $id => $document) {
-            $array2[$id] = $document->toArray();
+        foreach ($results as $document) {
+            $array2[$document->getId()->__toString()] = $document->toArray();
         }
 
         $this->assertEquals($array1, $array2);
@@ -240,7 +240,7 @@ class RepositoryTest extends TestCase
         $criteria = array('is_active' => false);
         $count = 20;
 
-        $collection = $this->getMockBuilder('MongoCollection')
+        $collection = $this->getMockBuilder('\\MongoDB\\Collection')
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -261,7 +261,7 @@ class RepositoryTest extends TestCase
         $criteria = array('is_active' => false);
         $newObject = array('$set' => array('title' => 'ups'));
 
-        $collection = $this->getMockBuilder('MongoCollection')
+        $collection = $this->getMockBuilder('\\MongoDB\\Collection')
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -280,7 +280,7 @@ class RepositoryTest extends TestCase
     {
         $criteria = array('is_active' => false);
 
-        $collection = $this->getMockBuilder('MongoCollection')
+        $collection = $this->getMockBuilder('\\MongoDB\\Collection')
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -295,29 +295,32 @@ class RepositoryTest extends TestCase
         $repository->remove($criteria);
     }
 
-    public function testGroup()
+    public function testAggregate()
     {
-        $keys = array('category' => 1);
-        $initial = array('items' => array());
-        $reduce = 'function (obj, prev) { prev.items.push(obj.name); }';
-        $options = array();
+        $pipeline = [
+            ['$match' => ['status' => 'A']],
+            ['$group' => ['_id' => '$cust_id', 'total' => ['$sum' => 'amount']]]
+        ];
 
-        $result = array(new \DateTime());
+        $result = [
+            ['_id' => 'a1', 'total' => 321],
+            ['_id' => 'a2', 'total' => 87],
+        ];
 
-        $collection = $this->getMockBuilder('MongoCollection')
+        $collection = $this->getMockBuilder('\\MongoDB\\Collection')
             ->disableOriginalConstructor()
-            ->getMock()
-        ;
+            ->getMock();
+
         $collection
             ->expects($this->once())
-            ->method('group')
-            ->with($keys, $initial, $reduce, $options)
-            ->will($this->returnValue($result))
-        ;
+            ->method('aggregate')
+            ->with($pipeline)
+            ->will($this->returnValue($result));
 
         $repository = new RepositoryMock($this->mandango);
         $repository->setCollection($collection);
-        $this->assertSame($result, $repository->group($keys, $initial, $reduce, $options));
+
+        $repository->aggregate($pipeline);
     }
 
     public function testDistinct()
@@ -344,8 +347,8 @@ class RepositoryTest extends TestCase
     {
         $collectionName = 'myCollectionName';
 
-        $map = new \MongoCode('map');
-        $reduce = new \MongoCode('reduce');
+        $map = new \MongoDB\BSON\Javascript('map');
+        $reduce = new \MongoDB\BSON\Javascript('reduce');
         $out = array('replace' => 'replaceCollectionName');
         $query = array('foo' => 'bar');
 
@@ -392,8 +395,8 @@ class RepositoryTest extends TestCase
     {
         $collectionName = 'myCollectionName';
 
-        $map = new \MongoCode('map');
-        $reduce = new \MongoCode('reduce');
+        $map = new \MongoDB\BSON\Javascript('map');
+        $reduce = new \MongoDB\BSON\Javascript('reduce');
         $out = array('replace' => 'replaceCollectionName');
         $query = array('foo' => 'bar');
         $options = array('ups' => 2);
@@ -449,8 +452,8 @@ class RepositoryTest extends TestCase
 
         $expectedCommand = array(
             'mapreduce' => $collectionName,
-            'map'       => new \MongoCode($map),
-            'reduce'    => new \MongoCode($reduce),
+            'map'       => new \MongoDB\BSON\Javascript($map),
+            'reduce'    => new \MongoDB\BSON\Javascript($reduce),
             'out'       => $out,
             'query'     => $query,
         );
@@ -488,11 +491,13 @@ class RepositoryTest extends TestCase
             ->method('command')
             ->will($this->returnValue($result));
 
-        $connection = $this->getMock('Mandango\Connection');
+        $connection = $this->getMockBuilder('\\Mandango\\Connection')
+            ->disableOriginalConstructor()
+            ->getMock();
         $connection
             ->expects($this->any())
             ->method('getDatabase')
-            ->will($this->returnValue($mongoDb));
+            ->will($this->returnValue($database));
 
         $connection = $this->createConnectionMockWithMongoDatabase($database);
         $repository = $this->createRepositoryMock()
@@ -511,14 +516,16 @@ class RepositoryTest extends TestCase
 
     private function createCollectionMock()
     {
-        return $this->getMockBuilder('MongoCollection')
+        return $this->getMockBuilder('\\MongoDB\\Collection')
             ->disableOriginalConstructor()
             ->getMock();
     }
 
     private function createConnectionMockWithMongoDatabase($database)
     {
-        $connection = $this->getMock('Mandango\Connection');
+        $connection = $this->getMockBuilder('\\Mandango\\Connection')
+            ->disableOriginalConstructor()
+            ->getMock();
         $connection
             ->expects($this->any())
             ->method('getDatabase')

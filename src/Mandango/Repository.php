@@ -301,7 +301,7 @@ abstract class Repository
      */
     public function update(array $query, array $newObject, array $options = array())
     {
-        return $this->getCollection()->update($query, $newObject, $options);
+        return $this->getCollection()->updateMany($query, $newObject, $options);
     }
 
     /**
@@ -316,26 +316,25 @@ abstract class Repository
      */
     public function remove(array $query = array(), array $options = array())
     {
-        return $this->getCollection()->remove($query, $options);
+        //var_dump(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS));
+        return $this->getCollection()->deleteMany($query, $options);
     }
 
     /**
-     * Shortcut to the collection group method.
+     * Executes an aggregation framework pipeline on the collection.
      *
-     * @param mixed $keys    The keys.
-     * @param array $initial The initial value.
-     * @param mixed $reduce  The reduce function.
-     * @param array $options The options (optional).
+     * @param mixed $pipeline List of pipeline operations
+     * @param array $options  Command options
      *
      * @return array The result
      *
-     * @see \MongoCollection::group()
+     * @see \MongoDB\Collection::aggregate()
      *
      * @api
      */
-    public function group($keys, array $initial, $reduce, array $options = array())
+    public function aggregate(array $pipeline, array $options = array())
     {
-        return $this->getCollection()->group($keys, $initial, $reduce, $options);
+        return $this->getCollection()->aggregate($pipeline, $options);
     }
 
     /**
@@ -370,8 +369,8 @@ abstract class Repository
     {
         $command = array_merge($command, array(
             'mapreduce' => $this->getCollectionName(),
-            'map'       => is_string($map) ? new \MongoCode($map) : $map,
-            'reduce'    => is_string($reduce) ? new \MongoCode($reduce) : $reduce,
+            'map'       => is_string($map) ? new \MongoDB\BSON\Javascript($map) : $map,
+            'reduce'    => is_string($reduce) ? new \MongoDB\BSON\Javascript($reduce) : $reduce,
             'out'       => $out,
             'query'     => $query,
         ));

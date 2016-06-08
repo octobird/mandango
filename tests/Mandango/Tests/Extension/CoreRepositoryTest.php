@@ -109,7 +109,9 @@ class CoreRepositoryTest extends TestCase
         $this->mandango->getRepository('Model\Article')->save($articles[2]);
 
         $this->assertFalse($articles[2]->isModified());
-        $this->assertSame(4, $this->mandango->getRepository('Model\Article')->getCollection()->find(array('title' => new \MongoRegex('/^foo/')))->count());
+        $this->assertSame(4, $this->mandango->getRepository('Model\Article')->getCollection()->count(
+            ['title' => new \MongoDB\BSON\Regex('^foo', '')]
+        ));
     }
 
     public function testSaveShouldConvertIdsToMongoWhenUpdating()
@@ -126,8 +128,8 @@ class CoreRepositoryTest extends TestCase
 
         $collection = $this->getCollection('Model\Article');
 
-        $result = $collection->findOne(array('_id' => $id));
-        $expectedResult = array('_id' => $id, 'title' => 'bar');
+        $result = iterator_to_array($collection->findOne(array('_id' => $id)));
+        $expectedResult = ['_id' => $id, 'title' => 'bar'];
 
         $this->assertEquals($expectedResult, $result);
     }
@@ -146,7 +148,9 @@ class CoreRepositoryTest extends TestCase
 
         $this->assertFalse($articles[4]->isModified());
         $this->assertFalse($articles[4]->isModified());
-        $this->assertSame(3, $this->mandango->getRepository('Model\Article')->getCollection()->find(array('title' => new \MongoRegex('/^foo/')))->count());
+        $this->assertSame(3, $this->mandango->getRepository('Model\Article')->getCollection()->count(
+            ['title' => new \MongoDB\BSON\Regex('^foo', '')]
+        ));
     }
 
     public function testSaveSaveReferences()
@@ -296,7 +300,7 @@ class CoreRepositoryTest extends TestCase
 
         $this->assertTrue($articles[2]->isNew());
         $this->assertTrue($articles[3]->isNew());
-        $this->assertSame(0, $this->mandango->getRepository('Model\Article')->getCollection()->find(array('_id' => array('$in' => $ids)))->count());
+        $this->assertSame(0, $this->mandango->getRepository('Model\Article')->getCollection()->count(array('_id' => array('$in' => $ids))));
         $this->assertFalse($this->mandango->getRepository('Model\Article')->getIdentityMap()->has($ids[0]));
         $this->assertFalse($this->mandango->getRepository('Model\Article')->getIdentityMap()->has($ids[1]));
         foreach (array(1, 4, 5) as $key) {
@@ -321,7 +325,7 @@ class CoreRepositoryTest extends TestCase
     {
         $this->mandango->getRepository('Model\Article')->ensureIndexes();
 
-        $indexInfo = $this->mandango->getRepository('Model\Article')->getCollection()->getIndexInfo();
+        $indexInfo = iterator_to_array($this->mandango->getRepository('Model\Article')->getCollection()->listIndexes());
 
         // root
         $this->assertSame(array('slug' => 1), $indexInfo[1]['key']);

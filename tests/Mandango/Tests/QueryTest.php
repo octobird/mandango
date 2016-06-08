@@ -351,7 +351,7 @@ class QueryTest extends TestCase
 
         $articleRaw['title'] = 'foo';
         $articleRaw['source']['name'] = 'foobar';
-        $this->mandango->getRepository('Model\Article')->getCollection()->save($articleRaw);
+        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $this->assertNull($article->getTitle());
         $this->assertNull($article->getSource()->getName());
@@ -574,13 +574,14 @@ class QueryTest extends TestCase
 
     public function testCreateCursor()
     {
+        $articles = $this->createArticlesRaw(10);
         $query = $this->query;
 
         $cursor = $query->createCursor();
-        $this->assertInstanceOf('MongoCursor', $cursor);
+        $this->assertInstanceOf('\\MongoDB\\Driver\\Cursor', $cursor);
 
-        $articles = $this->createArticlesRaw(10);
         $results = iterator_to_array($cursor);
+
         foreach ($articles as $article) {
             $this->assertTrue(isset($results[$article['_id']->__toString()]));
         }
@@ -603,7 +604,7 @@ class QueryTest extends TestCase
         ;
 
         $cursor = $query->createCursor();
-        $this->assertInstanceOf('MongoCursor', $cursor);
+        $this->assertInstanceOf('\\MongoDB\\Driver\\Cursor', $cursor);
     }
 
     public function providerNotArrayOrNull()

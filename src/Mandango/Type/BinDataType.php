@@ -29,7 +29,7 @@ class BinDataType extends Type
             $value = file_get_contents($value);
         }
 
-        return new \MongoBinData($value,  \MongoBinData::BYTE_ARRAY);
+        return new \MongoDB\BSON\Binary($value, \MongoDB\BSON\Binary::TYPE_GENERIC);
     }
 
     /**
@@ -37,7 +37,7 @@ class BinDataType extends Type
      */
     public function toPHP($value)
     {
-        return $value->bin;
+        return $value->getData();
     }
 
     /**
@@ -45,7 +45,7 @@ class BinDataType extends Type
      */
     public function toMongoInString()
     {
-        return 'if (is_file(%from%)) { %from% = file_get_contents(%from%); } %to% = new \MongoBinData(%from%,  \MongoBinData::BYTE_ARRAY);';
+        return 'if (is_file(%from%)) { %from% = file_get_contents(%from%); } %to% = new \MongoDB\BSON\Binary(%from%,  \MongoDB\BSON\Binary::TYPE_GENERIC);';
     }
 
     /**
@@ -53,6 +53,6 @@ class BinDataType extends Type
      */
     public function toPHPInString()
     {
-        return '%to% = %from%->bin;';
+        return '%to% = %from%->getData();';
     }
 }

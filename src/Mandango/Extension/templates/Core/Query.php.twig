@@ -36,7 +36,8 @@
         }
 
         $documents = array();
-        foreach ($this->createCursor() as $id => $data) {
+        foreach ($this->createCursor() as $data) {
+            $id = (string)$data['_id'];
 {% if config_class.inheritable and 'single' == config_class.inheritable.type %}
             $documentClass = null;
             $identityMap = null;
@@ -71,7 +72,7 @@
 
                 $identityMap[$id] = $document;
             }
-            $documents[$id] = $document;
+            $documents[] = $document;
         }
 
         if ($references = $this->getReferences()) {
