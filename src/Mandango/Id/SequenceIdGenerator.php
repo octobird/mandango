@@ -41,32 +41,14 @@ class SequenceIdGenerator extends BaseIdGenerator
         }
 
         return <<<EOF
-\$serverInfo = \$repository->getConnection()->getClient()->selectDatabase('admin')->command(array('buildinfo' => true));
-\$mongoVersion = \$serverInfo['version'];
-
 \$commandResult = \$repository->getConnection()->getDatabase()->command(array(
     'findandmodify' => 'mandango_sequence_id_generator',
     'query'         => array('_id' => \$repository->getCollectionName()),
     'update'        => array('\$inc' => array('sequence' => $increment)),
     'new'           => true,
+    'upsert'        => true
 ));
-if (
-    (version_compare(\$mongoVersion, '2.0', '<') && \$commandResult['ok'])
-    ||
-    (version_compare(\$mongoVersion, '2.0', '>=') && null !== \$commandResult['value'])
-) {
-    %id% = \$commandResult['value']['sequence'];
-} else {
-    // Work around mongofill-hhvm's implementation of insert()
-    // TODO: which one is needed with the new driver?
-    \$doc = array('_id' => \$repository->getCollectionName(), 'sequence' => $start);
-    \$repository
-        ->getConnection()
-        ->getClient()
-        ->selectCollection('mandango_sequence_id_generator')
-        ->insertOne(\$doc);
-    %id% = $start;
-}
+%id% = \$commandResult->toArray()[0]['value']['sequence'];
 EOF;
     }
 

@@ -133,7 +133,12 @@ class TestCase extends \PHPUnit_Framework_TestCase
                 'content' => 'Content'.$i,
             );
         }
-        $this->mandango->getRepository('Model\Article')->getCollection()->batchInsert($articles);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertMany($articles);
+        $insertedIds = $result->getInsertedIds();
+
+        foreach ($articles as $i => &$a) {
+            $a['_id'] = $insertedIds[$i];
+        }
 
         return $articles;
     }

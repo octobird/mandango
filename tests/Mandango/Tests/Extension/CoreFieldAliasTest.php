@@ -28,10 +28,10 @@ class CoreFieldAliasTest extends TestCase
         $articleRaw = array(
             'basatos' => 123
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $article = $this->mandango->create('Model\Article');
-        $article->setId($articleRaw['_id']);
+        $article->setId($result->getInsertedId());
         $article->setIsNew(false);
         $this->assertSame('123', $article->getDatabase());
     }
@@ -43,10 +43,10 @@ class CoreFieldAliasTest extends TestCase
                 'desde' => 123,
             ),
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $article = $this->mandango->create('Model\Article');
-        $article->setId($articleRaw['_id']);
+        $article->setId($result->getInsertedId());
         $article->setIsNew(false);
         $this->assertSame('123', $article->getSource()->getFrom());
     }
@@ -56,7 +56,7 @@ class CoreFieldAliasTest extends TestCase
         $articleRaw = array(
             'basatos' => '123',
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $query = $this->mandango->getRepository('Model\Article')->createQuery();
         $article = $query->one();
@@ -73,7 +73,7 @@ class CoreFieldAliasTest extends TestCase
                 'desde' => '123',
             ),
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $query = $this->mandango->getRepository('Model\Article')->createQuery();
         $article = $query->one();

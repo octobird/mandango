@@ -111,7 +111,7 @@ abstract class Document extends AbstractDocument
     /**
      * Save the document.
      *
-     * @param array $options The options for the batch insert or update operation, it depends on if the document is new or not (optional).
+     * @param array $options The options for the insertMany or update operation, it depends on if the document is new or not (optional).
      *
      * @return \Mandango\Document\Document The document (fluent interface).
      *
@@ -120,14 +120,14 @@ abstract class Document extends AbstractDocument
     public function save(array $options = array())
     {
         if ($this->isNew()) {
-            $batchInsertOptions = $options;
+            $insertManyOptions = $options;
             $updateOptions = array();
         } else {
-            $batchInsertOptions = array();
+            $insertManyOptions = array();
             $updateOptions = $options;
         }
 
-        $this->getRepository()->save($this, $batchInsertOptions, $updateOptions);
+        $this->getRepository()->save($this, $insertManyOptions, $updateOptions);
 
         return $this;
     }

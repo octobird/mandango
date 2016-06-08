@@ -180,7 +180,12 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
      */
     private function initializeSaved()
     {
-        $this->saved = $this->doInitializeSaved($this->doInitializeSavedData());
+        $d = $this->doInitializeSavedData();
+        /*if (!is_array($d)) {
+            var_dump($d);
+            exit();
+        }*/
+        $this->saved = $this->doInitializeSaved($d);
     }
 
     /**
@@ -217,8 +222,11 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
      *
      * @api
      */
-    protected function doInitializeSaved(array $data)
+    protected function doInitializeSaved($data)
     {
+        if (!is_array($data) && ! $data instanceof \MongoDB\Model\BSONArray) {
+            throw new \InvalidArgumentException("The $data parameter must be an array or BSONArray");
+        }
         return $data;
     }
 

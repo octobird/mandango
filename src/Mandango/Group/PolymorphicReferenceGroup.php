@@ -90,8 +90,10 @@ class PolymorphicReferenceGroup extends PolymorphicGroup
     /**
      * {@inheritdoc}
      */
-    protected function doInitializeSaved(array $data)
+    protected function doInitializeSaved($data)
     {
+        $data = parent::doInitializeSaved($data);
+
         $parent = $this->getParent();
         $mandango = $parent->getMandango();
 

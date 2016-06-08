@@ -78,8 +78,11 @@ class EmbeddedGroup extends Group
      *
      * @param array $data The saved data.
      */
-    public function setSavedData(array $data)
+    public function setSavedData($data)
     {
+        if (!is_array($data) && ! $data instanceof \MongoDB\Model\BSONArray) {
+            throw new \InvalidArgumentException("The $data parameter must be an array or BSONArray");
+        }
         $this->_saved_data = $data;
     }
 
@@ -142,8 +145,10 @@ class EmbeddedGroup extends Group
     /**
      * {@inheritdoc}
      */
-    protected function doInitializeSaved(array $data)
+    protected function doInitializeSaved($data)
     {
+        $data = parent::doInitializeSaved($data);
+
         if (null === $this->_root) {
             return [];
         }

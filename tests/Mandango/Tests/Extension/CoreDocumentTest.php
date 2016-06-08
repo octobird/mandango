@@ -441,10 +441,10 @@ class CoreDocumentTest extends TestCase
                 ),
             ),
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $article = $this->mandango->create('Model\Article');
-        $article->setId($articleRaw['_id']);
+        $article->setId($result->getInsertedId());
         $article->setIsNew(false);
 
         $source = $article->getSource();
@@ -473,10 +473,10 @@ class CoreDocumentTest extends TestCase
                 ),
             ),
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $article = $this->mandango->create('Model\Article');
-        $article->setId($articleRaw['_id']);
+        $article->setId($result->getInsertedId());
         $article->setIsNew(false);
         $source = $this->mandango->create('Model\Source');
         $article->setSource($source);
@@ -486,7 +486,7 @@ class CoreDocumentTest extends TestCase
 
         // deep
         $article = $this->mandango->create('Model\Article');
-        $article->setId($articleRaw['_id']);
+        $article->setId($result->getInsertedId());
         $article->setIsNew(false);
         $source = $article->getSource();
         $info = $this->mandango->create('Model\Info');
@@ -508,7 +508,7 @@ class CoreDocumentTest extends TestCase
                 ),
             ),
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $query = $this->mandango->getRepository('Model\Article')->createQuery();
         $article = $query->one();
@@ -1073,7 +1073,7 @@ class CoreDocumentTest extends TestCase
         $article = $this->mandango->create('Model\Article')->setId($article->getId())->setIsNew(false);
 
         $this->assertSame(array(
-            '_id'       => $article->getId()->{'$id'},
+            '_id'       => (string)$article->getId(),
             'title'    => 'foo',
             'content'  => 'bar',
             'note'     => null,
@@ -1153,10 +1153,10 @@ class CoreDocumentTest extends TestCase
                 ),
             ),
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $article = $this->mandango->create('Model\Article');
-        $article->setId($articleRaw['_id'])->setIsnew(false);
+        $article->setId($result->getInsertedId())->setIsnew(false);
 
         $comments = $article->getComments()->getSaved();
 
@@ -1195,7 +1195,7 @@ class CoreDocumentTest extends TestCase
                 ),
             ),
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $query = $this->mandango->getRepository('Model\Article')->createQuery();
         $article = $query->one();
@@ -1249,10 +1249,10 @@ class CoreDocumentTest extends TestCase
                 ),
             ),
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $article = $this->mandango->create('Model\Article');
-        $article->setId($articleRaw['_id'])->setIsnew(false);
+        $article->setId($result->getInsertedId())->setIsnew(false);
 
         $this->assertSame(3, $article->getComments()->count());
     }
@@ -1274,9 +1274,9 @@ class CoreDocumentTest extends TestCase
             'content'  => 'bar',
             'isActive' => 1,
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
-        $article = $this->mandango->create('Model\Article')->setId($articleRaw['_id']);
+        $article = $this->mandango->create('Model\Article')->setId($result->getInsertedId());
         $article->setIsNew(false);
         $article->setTitle('ups')->setNote('bump');
         $article->refresh();
@@ -1408,11 +1408,11 @@ class CoreDocumentTest extends TestCase
                 'note' => 'fooups',
             ),
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $article = $this->mandango->create('Model\Article');
         $article->setDocumentData(array(
-            '_id' => $articleRaw['_id'],
+            '_id' => $result->getInsertedId(),
             'source' => array(),
             '_fields' => array(
                 'title'   => 1,

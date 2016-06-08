@@ -87,7 +87,7 @@
         $array = array();
         $id = $this->getId();
         if ($id instanceof \MongoDB\BSON\ObjectID) {
-            $id = $id->{'$id'};
+            $id = (string)$id;
         }
 
         $withFields = empty($fields) || in_array('*', $fields) || in_array('_id', $fields);
