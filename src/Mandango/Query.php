@@ -50,20 +50,13 @@ abstract class Query implements \Countable, \IteratorAggregate
 
         $hash = $this->repository->getDocumentClass();
 
-        if (version_compare(PHP_VERSION, '5.3.6', '=>')) {
-            $debugBacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-        } else {
-            $debugBacktrace = debug_backtrace();
-        }
+        $debugBacktrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 16);
         foreach ($debugBacktrace as $value) {
             if (isset($value['function'])) {
                 $hash .= $value['function'];
             }
             if (isset($value['class'])) {
                 $hash .= $value['class'];
-            }
-            if (isset($value['type'])) {
-                $hash .= $value['type'];
             }
             if (isset($value['file'])) {
                 $hash .= $value['file'];
