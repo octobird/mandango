@@ -109,12 +109,17 @@ class TestCase extends \PHPUnit_Framework_TestCase
         return $this->mandango->create('Model\Article')->setTitle($title)->save();
     }
 
+    /**
+     * Return an array indexed with the values of the given field.
+     * 
+     * The values of the given fields are converted to string.
+     */
     protected function indexArray($indexFieldName, $array)
     {
         $ret = [];
         foreach ($array as $e)
         {
-            $ret[$a[$indexFieldName]] = $a;
+            $ret[(string)$e[$indexFieldName]] = $e;
         }
         return $ret;
     }

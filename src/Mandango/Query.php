@@ -569,7 +569,7 @@ abstract class Query implements \Countable, \IteratorAggregate
         }
 
         if (null !== $this->hint) {
-            $options['modifiers']['$hint'] = $this->snapshot;
+            $options['modifiers']['$hint'] = $this->hint;
         }
 
         if (null !== $this->slaveOkay) {
@@ -577,11 +577,15 @@ abstract class Query implements \Countable, \IteratorAggregate
         }
 
         if ($this->snapshot) {
-            $options['modifiers']['$snapshot'] = $this->snapshot;
+            //$options['modifiers']['$snapshot'] = $this->snapshot;
         }
 
         if (null !== $this->timeout) {
-            $options['modifiers']['$maxTimeMS'] = $this->timeout;
+            $options['maxTimeMS'] = $this->timeout;
+        }
+
+        if (null !== $this->timeout) {
+            $options['projection'] = $this->fields;
         }
 
         return $options;
@@ -606,6 +610,6 @@ abstract class Query implements \Countable, \IteratorAggregate
      */
     public function createCursor()
     {
-        return $this->repository->getCollection()->find($this->criteria, $this->fields, $this->createOptions());
+        return $this->repository->getCollection()->find($this->criteria, $this->createOptions());
     }
 }

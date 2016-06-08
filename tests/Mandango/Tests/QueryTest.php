@@ -580,7 +580,7 @@ class QueryTest extends TestCase
         $cursor = $query->createCursor();
         $this->assertInstanceOf('\\MongoDB\\Driver\\Cursor', $cursor);
 
-        $results = iterator_to_array($cursor);
+        $results = $this->indexArray('_id', iterator_to_array($cursor));
 
         foreach ($articles as $article) {
             $this->assertTrue(isset($results[$article['_id']->__toString()]));

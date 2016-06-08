@@ -22,7 +22,7 @@ use Mandango\Document\Document;
  */
 class IdentityMap implements IdentityMapInterface
 {
-    private $documents;
+    public $documents;
 
     /**
      * Constructor.
