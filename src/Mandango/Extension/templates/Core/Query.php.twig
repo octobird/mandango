@@ -9,11 +9,9 @@
         $mandango = $repository->getMandango();
         $documentClass = $repository->getDocumentClass();
         $identityMap =& $repository->getIdentityMap()->allByReference();
-        $isFile = $repository->isFile();
 {% if config_class.inheritable and 'single' == config_class.inheritable.type %}
         $identityMaps = array();
         $mandango = $this->getRepository()->getMandango();
-        $isFile = $this->getRepository()->isFile();
 
         if ($fields = $this->getFields()) {
             $fields['{{ config_class.inheritable.field }}'] = 1;
@@ -65,11 +63,6 @@
                 $document = $identityMap[$id];
                 $document->addQueryHash($this->getHash());
             } else {
-                if ($isFile) {
-                    $file = $data;
-                    $data = $file->file;
-                    $data['file'] = $file;
-                }
                 $data['_query_hash'] = $this->getHash();
                 $data['_fields'] = $fields;
 

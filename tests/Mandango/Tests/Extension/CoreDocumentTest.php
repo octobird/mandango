@@ -42,15 +42,16 @@ class CoreDocumentTest extends TestCase
             'title'   => 'foo',
             'content' => 123,
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $article = $this->mandango->create('Model\Article');
-        $article->setId($articleRaw['_id']);
+        $article->setId($result->getInsertedId());
         $article->setIsNew(false);
         $this->assertSame($article, $article->setTitle('foo'));
         $this->assertFalse($article->isFieldModified('title'));
         $this->assertSame($article, $article->setTitle('foo'));
         $this->assertFalse($article->isFieldModified('title'));
+
     }
 
     public function testFieldsGettersQueryValueIfItDoesNotExistInNotNewDocuments()
@@ -59,10 +60,10 @@ class CoreDocumentTest extends TestCase
             'title'   => 'foo',
             'content' => 123,
         );
-        $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
+        $result = $this->mandango->getRepository('Model\Article')->getCollection()->insertOne($articleRaw);
 
         $article = $this->mandango->create('Model\Article');
-        $article->setId($articleRaw['_id']);
+        $article->setId($result->getInsertedId());
         $article->setIsNew(false);
         $this->assertSame('foo', $article->getTitle());
         $this->assertSame('123', $article->getContent());
@@ -221,13 +222,23 @@ class CoreDocumentTest extends TestCase
     {
         $article = $this->mandango->create('Model\Article')->setDocumentData(array(
             '_id' => new \MongoDB\BSON\ObjectID($this->generateObjectId()),
-            'categories' => $baseIds = array(new \MongoDB\BSON\ObjectID($this->generateObjectId()), new \MongoDB\BSON\ObjectID($this->generateObjectId()), new \MongoId($this->generateObjectId()), new \MongoId($this->generateObjectId())),
+            'categories' => $baseIds = array(
+                new \MongoDB\BSON\ObjectID($this->generateObjectId()),
+                new \MongoDB\BSON\ObjectID($this->generateObjectId()),
+                new \MongoDB\BSON\ObjectID($this->generateObjectId()),
+                new \MongoDB\BSON\ObjectID($this->generateObjectId())),
             'source' => array(
-                'categories' => $sourceBaseIds = array(new \MongoDB\BSON\ObjectID($this->generateObjectId()), new \MongoId($this->generateObjectId()), new \MongoId($this->generateObjectId())),
+                'categories' => $sourceBaseIds = array(
+                    new \MongoDB\BSON\ObjectID($this->generateObjectId()),
+                    new \MongoDB\BSON\ObjectID($this->generateObjectId()),
+                    new \MongoDB\BSON\ObjectID($this->generateObjectId())),
             ),
             'comments' => array(
                 array(
-                    'categories' => $commentBaseIds = array(new \MongoDB\BSON\ObjectID($this->generateObjectId()), new \MongoId($this->generateObjectId()), new \MongoId($this->generateObjectId())),
+                    'categories' => $commentBaseIds = array(
+                        new \MongoDB\BSON\ObjectID($this->generateObjectId()),
+                        new \MongoDB\BSON\ObjectID($this->generateObjectId()),
+                        new \MongoDB\BSON\ObjectID($this->generateObjectId())),
                 ),
             ),
         ));

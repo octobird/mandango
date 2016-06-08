@@ -24,7 +24,6 @@ abstract class Repository
      * Setted by the generator.
      */
     protected $documentClass;
-    protected $isFile;
     protected $connectionName;
     protected $collectionName;
 
@@ -95,18 +94,6 @@ abstract class Repository
     }
 
     /**
-     * Returns if the document is a file (if it uses GridFS).
-     *
-     * @return boolean If the document is a file.
-     *
-     * @api
-     */
-    public function isFile()
-    {
-        return $this->isFile;
-    }
-
-    /**
      * Returns the connection name, or null if it is the default.
      *
      * @return string|null The connection name.
@@ -153,20 +140,14 @@ abstract class Repository
     /**
      * Returns the collection.
      *
-     * @return \MongoCollection The collection.
+     * @return \MongoDB\Collection The collection.
      *
      * @api
      */
     public function getCollection()
     {
         if (!$this->collection) {
-            // gridfs
-            if ($this->isFile) {
-                $this->collection = $this->getConnection()->getDatabase()->getGridFS($this->collectionName);
-            // normal
-            } else {
-                $this->collection = $this->getConnection()->getDatabase()->selectCollection($this->collectionName);
-            }
+            $this->collection = $this->getConnection()->getDatabase()->selectCollection($this->collectionName);
         }
 
         return $this->collection;

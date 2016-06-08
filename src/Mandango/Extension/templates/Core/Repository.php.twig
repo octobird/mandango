@@ -10,7 +10,6 @@
     public function __construct(\Mandango\Mandango $mandango)
     {
         $this->documentClass = '{{ class }}';
-        $this->isFile = {{ config_class.isFile ? 'true' : 'false' }};
 {% if config_class.connection %}
         $this->connectionName = '{{ config_class.connection }}';
 {% endif %}
@@ -226,7 +225,7 @@
                 }
 {% endfor %}
                 $query = $document->queryForSave();
-                $collection->update(array('_id' => $this->idToMongo($document->getId())), $query, $updateOptions);
+                $collection->updateOne(array('_id' => $this->idToMongo($document->getId())), $query, $updateOptions);
                 $document->clearModified();
 {% if config_class._has_groups %}
                 $document->resetGroups();

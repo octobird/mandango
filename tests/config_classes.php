@@ -244,9 +244,8 @@ return array(
             'author' => array('class' => 'Model\Author'),
         ),
     ),
-    // gridfs
+    // image
     'Model\Image' => array(
-        'isFile' => true,
         'fields' => array(
             'name' => 'string',
         ),

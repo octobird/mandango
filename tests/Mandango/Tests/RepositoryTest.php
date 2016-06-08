@@ -19,7 +19,6 @@ use Mandango\Query;
 class Repository extends BaseRepository
 {
     protected $documentClass = 'MyDocument';
-    protected $isFile = true;
     protected $connectionName = 'foo';
     protected $collectionName = 'bar';
 
@@ -94,12 +93,6 @@ class RepositoryTest extends TestCase
         $this->assertSame('MyDocument', $repository->getDocumentClass());
     }
 
-    public function testIsFile()
-    {
-        $repository = new Repository($this->mandango);
-        $this->assertTrue($repository->isFile());
-    }
-
     public function testGetConnectionName()
     {
         $repository = new Repository($this->mandango);
@@ -137,13 +130,6 @@ class RepositoryTest extends TestCase
         $collection = $mandango->getRepository('Model\Article')->getCollection();
         $this->assertEquals($connection->getDatabase()->selectCollection('articles'), $collection);
         $this->assertSame($collection, $mandango->getRepository('Model\Article')->getCollection());
-    }
-
-    public function testCollectionGridFS()
-    {
-        $collection = $this->mandango->getRepository('Model\Image')->getCollection();
-        $this->assertEquals($this->db->getGridFS('model_image'), $collection);
-        $this->assertSame($collection, $this->mandango->getRepository('Model\Image')->getCollection());
     }
 
     public function testQuery()

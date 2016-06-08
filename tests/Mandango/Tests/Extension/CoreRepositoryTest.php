@@ -359,12 +359,6 @@ class CoreRepositoryTest extends TestCase
         $this->assertSame('Model\Category', $this->mandango->getRepository('Model\Category')->getDocumentClass());
     }
 
-    public function testIsFile()
-    {
-        $this->assertFalse($this->mandango->getRepository('Model\Article')->isFile());
-        $this->assertTrue($this->mandango->getRepository('Model\Image')->isFile());
-    }
-
     public function testConnectionName()
     {
         $this->assertNull($this->mandango->getRepository('Model\Article')->getConnectionName());

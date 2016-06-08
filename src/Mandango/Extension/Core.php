@@ -91,7 +91,6 @@ class Core extends Extension
 
         $this->initEventsProcess();
         $this->initOnDeleteProcess();
-        $this->initIsFileProcess();
     }
 
     /**
@@ -312,17 +311,6 @@ class Core extends Extension
         if (!isset($this->configClass['onDelete'])) {
             $this->configClass['onDelete'] = array();
         }
-    }
-
-    private function initIsFileProcess()
-    {
-        $default = false;
-        $this->configClass['isFile'] = $this->mapArrayKeyWithDefault(
-            $this->configClass,
-            'isFile',
-            array($this, 'mapToBoolean'),
-            $default
-        );
     }
 
     /*
