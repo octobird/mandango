@@ -10,6 +10,7 @@ php:
   - 5.5
 
 before_script:
+  - yes "" | pecl install mongodb
   - ./composer.phar install
 
 script: vendor/bin/phpunit

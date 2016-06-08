@@ -202,14 +202,14 @@ class CoreSingleInheritanceTest extends TestCase
         }
 
         $this->assertSame(16, $this->mandango->getRepository('Model\Element')->count());
-        $this->assertSame(3, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoDB\BSON\Regex('/^Textarea/', ''))));
-        $this->assertSame(8, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoDB\BSON\Regex('/^Text/', ''))));
-        $this->assertSame(1, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoDB\BSON\Regex('/^Radio/', ''))));
-        $this->assertSame(5, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoDB\BSON\Regex('/^Form/', ''))));
+        $this->assertSame(3, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoDB\BSON\Regex('^Textarea', ''))));
+        $this->assertSame(8, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoDB\BSON\Regex('^Text', ''))));
+        $this->assertSame(1, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoDB\BSON\Regex('^Radio', ''))));
+        $this->assertSame(5, $this->mandango->getRepository('Model\Element')->count(array('label' => new \MongoDB\BSON\Regex('^Form', ''))));
         $this->assertSame(9, $this->mandango->getRepository('Model\FormElement')->count());
-        $this->assertSame(3, $this->mandango->getRepository('Model\FormElement')->count(array('label' => new \MongoDB\BSON\Regex('/^Text/', ''))));
+        $this->assertSame(3, $this->mandango->getRepository('Model\FormElement')->count(array('label' => new \MongoDB\BSON\Regex('^Text', ''))));
         $this->assertSame(3, $this->mandango->getRepository('Model\TextareaFormElement')->count());
-        $this->assertSame(0, $this->mandango->getRepository('Model\TextareaFormElement')->count(array('label' => new \MongoDB\BSON\Regex('/^R/', ''))));
+        $this->assertSame(0, $this->mandango->getRepository('Model\TextareaFormElement')->count(array('label' => new \MongoDB\BSON\Regex('^R', ''))));
         $this->assertSame(1, $this->mandango->getRepository('Model\RadioFormElement')->count());
         $this->assertSame(5, $this->mandango->getRepository('Model\TextElement')->count());
     }
@@ -241,7 +241,7 @@ class CoreSingleInheritanceTest extends TestCase
         $this->mandango->getRepository('Model\FormElement')->update(array('label' => 'Textarea0'), $newObject);
         $this->assertSame(1, $this->mandango->getRepository('Model\Element')->getCollection()->count($criteria));
         $this->assertSame(1, $this->mandango->getRepository('Model\FormElement')->getCollection()->count($criteria));
-        $this->mandango->getRepository('Model\TextareaFormElement')->update(array('label' => new \MongoDB\BSON\Regex('/^FormElement/', '')), $newObject);
+        $this->mandango->getRepository('Model\TextareaFormElement')->update(array('label' => new \MongoDB\BSON\Regex('^FormElement', '')), $newObject);
         $this->assertSame(1, $this->mandango->getRepository('Model\FormElement')->getCollection()->count($criteria));
         $this->mandango->getRepository('Model\TextareaFormElement')->update(array(), $newObject);
         $this->assertSame(1, $this->mandango->getRepository('Model\TextareaFormElement')->getCollection()->count($criteria));
@@ -272,7 +272,7 @@ class CoreSingleInheritanceTest extends TestCase
         $this->mandango->getRepository('Model\FormElement')->remove(array('label' => 'Textarea0'));
         $this->assertSame(10, $this->mandango->getRepository('Model\Element')->getCollection()->count());
         $this->assertSame(10, $this->mandango->getRepository('Model\FormElement')->getCollection()->count());
-        $this->mandango->getRepository('Model\TextareaFormElement')->remove(array('label' => new \MongoDB\BSON\Regex('/^FormElement/', '')));
+        $this->mandango->getRepository('Model\TextareaFormElement')->remove(array('label' => new \MongoDB\BSON\Regex('^FormElement', '')));
         $this->assertSame(10, $this->mandango->getRepository('Model\FormElement')->getCollection()->count());
         $this->mandango->getRepository('Model\TextareaFormElement')->remove();
         $this->assertSame(8, $this->mandango->getRepository('Model\TextareaFormElement')->getCollection()->count());
@@ -334,41 +334,42 @@ class CoreSingleInheritanceTest extends TestCase
         $this->assertSame(6, count($documents));
 
         $documents = $this->mandango->getRepository('Model\FormElement')->createQuery(array('_id' => array('$in' => $ids)))->all();
+        $ids = array_map(function($e) { return (string)$e->getId();}, $documents);
         $this->assertSame(6, count($documents));
 
         $id = $formElements[0]->getId();
-        $this->assertTrue(isset($documents[$id->__toString()]));
-        $document = $documents[$id->__toString()];
+        $this->assertTrue(false !== $_ = array_search((string)$id, $ids));
+        $document = $documents[$_];
         $this->assertInstanceof('Model\FormElement', $document);
         $this->assertEquals($id, $document->getId());
 
         $id = $textareaFormElements[0]->getId();
-        $this->assertTrue(isset($documents[$id->__toString()]));
-        $document = $documents[$id->__toString()];
+        $this->assertTrue(false !== $_ = array_search((string)$id, $ids));
+        $document = $documents[$_];
         $this->assertInstanceof('Model\TextareaFormElement', $document);
         $this->assertEquals($id, $document->getId());
 
         $id = $radioFormElements[0]->getId();
-        $this->assertTrue(isset($documents[$id->__toString()]));
-        $document = $documents[$id->__toString()];
+        $this->assertTrue(false !== $_ = array_search((string)$id, $ids));
+        $document = $documents[$_];
         $this->assertInstanceof('Model\RadioFormElement', $document);
         $this->assertEquals($id, $document->getId());
 
         $id = $formElements[1]->getId();
-        $this->assertTrue(isset($documents[$id->__toString()]));
-        $document = $documents[$id->__toString()];
+        $this->assertTrue(false !== $_ = array_search((string)$id, $ids));
+        $document = $documents[$_];
         $this->assertInstanceof('Model\FormElement', $document);
         $this->assertEquals($id, $document->getId());
 
         $id = $textareaFormElements[1]->getId();
-        $this->assertTrue(isset($documents[$id->__toString()]));
-        $document = $documents[$id->__toString()];
+        $this->assertTrue(false !== $_ = array_search((string)$id, $ids));
+        $document = $documents[$_];
         $this->assertInstanceof('Model\TextareaFormElement', $document);
         $this->assertEquals($id, $document->getId());
 
         $id = $radioFormElements[1]->getId();
-        $this->assertTrue(isset($documents[$id->__toString()]));
-        $document = $documents[$id->__toString()];
+        $this->assertTrue(false !== $_ = array_search((string)$id, $ids));
+        $document = $documents[$_];
         $this->assertInstanceof('Model\RadioFormElement', $document);
         $this->assertEquals($id, $document->getId());
 
