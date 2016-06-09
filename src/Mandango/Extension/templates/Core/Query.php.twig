@@ -147,4 +147,23 @@
 
         return $cursor;
     }
+
+    public function count()
+    {
+        $criteria = $savedCriteria = $this->getCriteria();
+{% if config_class.inheritable %}
+        $types = $this->getRepository()->getInheritableTypes();
+        $types[] = '{{ config_class.inheritance.value }}';
+        $criteria = array_merge($criteria, array('{{ config_class.inheritance.field }}' => array('$in' => $types)));
+{% else %}
+        $criteria = array_merge($criteria, array('{{ config_class.inheritance.field }}' => '{{ config_class.inheritance.value }}'));
+{% endif %}
+        $this->criteria($criteria);
+
+        $count = parent::count();
+
+        $this->criteria($savedCriteria);
+
+        return $count;
+    }
 {% endif %}

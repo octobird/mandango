@@ -244,7 +244,7 @@ class CoreSingleInheritanceTest extends TestCase
         $this->mandango->getRepository('Model\TextareaFormElement')->update(array('label' => new \MongoDB\BSON\Regex('^FormElement', '')), $newObject);
         $this->assertSame(1, $this->mandango->getRepository('Model\FormElement')->getCollection()->count($criteria));
         $this->mandango->getRepository('Model\TextareaFormElement')->update(array(), $newObject);
-        $this->assertSame(1, $this->mandango->getRepository('Model\TextareaFormElement')->getCollection()->count($criteria));
+        $this->assertSame(3, $this->mandango->getRepository('Model\TextareaFormElement')->getCollection()->count($criteria));
     }
 
     public function testRepositoryRemove()

@@ -316,7 +316,6 @@ abstract class Repository
      */
     public function remove(array $query = array(), array $options = array())
     {
-        //var_dump(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS));
         return $this->getCollection()->deleteMany($query, $options);
     }
 
