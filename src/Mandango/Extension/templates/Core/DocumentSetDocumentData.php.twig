@@ -44,7 +44,7 @@
 {% for name, field in config_class.fields %}
         if (isset($data['{{ field.dbName }}'])) {
             {{ mandango_type_to_php(field.type, "$data['" ~ field.dbName ~ "']", "$this->data['fields']['" ~ name ~ "']") }}
-        } elseif (isset($data['_fields']['{{ field.dbName }}'])) {
+        } elseif (isset($data['_fields']) && isset($data['_fields']['{{ field.dbName }}'])) {
             $this->data['fields']['{{ name }}'] = null;
         }
 {% endfor %}
@@ -60,7 +60,7 @@
 {% else %}
             $embedded->setRootAndPath($this, '{{ name }}');
 {% endif %}
-            if (isset($data['_fields']['{{ name }}'])) {
+            if (isset($data['_fields']) && isset($data['_fields']['{{ name }}'])) {
                 $data['{{ name }}']['_fields'] = $data['_fields']['{{ name }}'];
             }
             $embedded->setDocumentData($data['{{ name }}']);
