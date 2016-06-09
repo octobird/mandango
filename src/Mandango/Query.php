@@ -570,16 +570,16 @@ abstract class Query implements \Countable, \IteratorAggregate
         }
 
         if ($this->snapshot) {
-            //$options['modifiers']['$snapshot'] = $this->snapshot;
+            $options['modifiers']['$snapshot'] = $this->snapshot;
         }
 
         if (null !== $this->timeout) {
             $options['maxTimeMS'] = $this->timeout;
         }
 
-        if (null !== $this->timeout) {
+        //if (null !== $this->fields) {
             $options['projection'] = $this->fields;
-        }
+        //}
 
         return $options;
     }

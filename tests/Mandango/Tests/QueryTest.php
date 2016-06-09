@@ -594,11 +594,9 @@ class QueryTest extends TestCase
         $query
             ->criteria(array('is_active' => true))
             ->fields(array('title' => 1))
-            ->sort(array('date' => -1))
             ->limit(10)
             ->skip(25)
             ->batchSize(5)
-            ->hint(array('username' => 1))
             ->snapshot(true)
             ->timeout(100)
         ;

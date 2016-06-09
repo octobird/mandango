@@ -24,7 +24,7 @@ abstract class AbstractDocument
 {
     private $mandango;
 
-    protected $data = array();
+    public $data = array();
     protected $fieldsModified = array();
     protected $changedEmbeddedOnes = array();
 

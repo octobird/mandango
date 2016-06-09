@@ -331,7 +331,7 @@
             $ids = array_unique(array_values(array_map(function ($result) { return $result['{{ name }}']; }, iterator_to_array($cursor))));
             if (count($ids)) {
                 $collection = $this->getMandango()->getRepository('{{ reference.class }}')->getCollection();
-                $referenceCursor = $collection->find(array('_id' => array('$in' => $ids)), array('_id' => 1));
+                $referenceCursor = $collection->find(array('_id' => array('$in' => $ids)), ['projection' => ['_id' => 1]]);
                 $referenceIds =  array_values(array_map(function ($result) { return $result['_id']; }, iterator_to_array($referenceCursor)));
 
                 if ($idsDiff = array_diff($ids, $referenceIds)) {
@@ -367,7 +367,7 @@
 
             if (count($ids)) {
                 $collection = $this->getMandango()->getRepository('{{ reference.class }}')->getCollection();
-                $referenceCursor = $collection->find(array('_id' => array('$in' => $ids)), array('_id' => 1));
+                $referenceCursor = $collection->find(array('_id' => array('$in' => $ids)), ['projection' => ['_id' => 1]]);
                 $referenceIds =  array_values(array_map(function ($result) { return $result['_id']; }, iterator_to_array($referenceCursor)));
 
                 if ($idsDiff = array_diff($ids, $referenceIds)) {
