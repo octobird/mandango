@@ -2,7 +2,7 @@ language: php
 
 services: mongodb
 
-sudo: false
+sudo: true
 
 php:
   - 5.5
@@ -10,8 +10,15 @@ php:
   - 7.0
   - hhvm
 
+addons:
+  apt:
+    packages:
+    - cmake
+    - libdouble-conversion-dev
+    - libjemalloc-dev
+    - libtbb-dev
+
 before_script:
-  - yes "" | pecl install mongodb
-  - ./composer.phar install
+  - ci/setup.sh
 
 script: vendor/bin/phpunit
