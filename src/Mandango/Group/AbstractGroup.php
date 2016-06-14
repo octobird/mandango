@@ -181,10 +181,6 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
     private function initializeSaved()
     {
         $d = $this->doInitializeSavedData();
-        /*if (!is_array($d)) {
-            var_dump($d);
-            exit();
-        }*/
         $this->saved = $this->doInitializeSaved($d);
     }
 

@@ -47,7 +47,7 @@ class DateType extends Type
      */
     public function toMongoInString()
     {
-        return 'if (%from% instanceof \DateTime) { %from% = %from%->getTimestamp(); } elseif (is_string(%from%)) { %from% = strtotime(%from%); } %to% = new \MongoDB\BSON\UTCDateTime(%from% * 1000);';
+        return '%to% = %from%; if (%to% instanceof \DateTime) { %to% = %to%->getTimestamp(); } elseif (is_string(%to%)) { %to% = strtotime(%to%); } %to% = new \MongoDB\BSON\UTCDateTime(%to% * 1000);';
     }
 
     /**
