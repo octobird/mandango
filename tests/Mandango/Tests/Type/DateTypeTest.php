@@ -20,14 +20,14 @@ class DateTypeTest extends TestCase
         $type = new DateType();
 
         $time = time();
-        $this->assertEquals(new \MongoDB\BSON\UTCDateTime($time), $type->toMongo($time));
+        $this->assertEquals((string)new \MongoDB\BSON\UTCDateTime($time * 1000), (string)$type->toMongo($time));
 
         $date = new \DateTime();
         $date->setTimestamp($time);
-        $this->assertEquals(new \MongoDB\BSON\UTCDateTime($time), $type->toMongo($date));
+        $this->assertEquals((string)new \MongoDB\BSON\UTCDateTime($time * 1000), (string)$type->toMongo($date));
 
         $string = '2010-02-20';
-        $this->assertEquals(new \MongoDB\BSON\UTCDateTime(strtotime($string)), $type->toMongo($string));
+        $this->assertEquals((string)new \MongoDB\BSON\UTCDateTime(strtotime($string) * 1000), (string)$type->toMongo($string));
     }
 
     public function testToPHP()
@@ -47,14 +47,14 @@ class DateTypeTest extends TestCase
         $function = $this->getTypeFunction($type->toMongoInString());
 
         $time = time();
-        $this->assertEquals(new \MongoDB\BSON\UTCDateTime($time), $function($time));
+        $this->assertEquals((string)new \MongoDB\BSON\UTCDateTime($time * 1000), (string)$function($time));
 
         $date = new \DateTime();
         $date->setTimestamp($time);
-        $this->assertEquals(new \MongoDB\BSON\UTCDateTime($time), $function($date));
+        $this->assertEquals((string)new \MongoDB\BSON\UTCDateTime($time * 1000), (string)$function($date));
 
         $string = '2010-02-20';
-        $this->assertEquals(new \MongoDB\BSON\UTCDateTime(strtotime($string)), $function($string));
+        $this->assertEquals((string)new \MongoDB\BSON\UTCDateTime(strtotime($string) * 1000), (string)$function($string));
     }
 
     public function testToPHPInString()
@@ -66,6 +66,6 @@ class DateTypeTest extends TestCase
         $date = new \DateTime();
         $date->setTimestamp($time);
 
-        $this->assertEquals($date, $function(new \MongoDB\BSON\UTCDateTime($time * 1000)));
+        $this->assertEquals($date, $_ = $function(new \MongoDB\BSON\UTCDateTime($time * 1000)));
     }
 }
