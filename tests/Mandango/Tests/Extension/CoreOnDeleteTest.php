@@ -167,9 +167,9 @@ class CoreOnDeleteTest extends TestCase
         $article2->refresh();
         $article3->refresh();
 
-        $this->assertEquals([$category3->getId()], iterator_to_array($article1->getCategoryIds()));
-        $this->assertEquals([$category2->getId()], iterator_to_array($article2->getCategoryIds()));
-        $this->assertEquals([], iterator_to_array(($article3->getCategoryIds())));
+        $this->assertEquals([$category3->getId()], (array)$article1->getCategoryIds());
+        $this->assertEquals([$category2->getId()], (array)$article2->getCategoryIds());
+        $this->assertEquals([], (array)($article3->getCategoryIds()));
     }
 
     public function testReferenceManyPolymorphicUnset()

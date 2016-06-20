@@ -218,9 +218,9 @@ class MandangoTest extends TestCase
         $article5->refresh();
         $article6->refresh();
 
-        $this->assertEquals(array($category3->getId()), iterator_to_array($article4->getCategoryIds()));
-        $this->assertEquals(array($category2->getId()), iterator_to_array($article5->getCategoryIds()));
-        $this->assertEquals(array(), iterator_to_array($article6->getCategoryIds()));
+        $this->assertEquals(array($category3->getId()), (array)$article4->getCategoryIds());
+        $this->assertEquals(array($category2->getId()), (array)$article5->getCategoryIds());
+        $this->assertEquals(array(), (array)$article6->getCategoryIds());
     }
 
     /**

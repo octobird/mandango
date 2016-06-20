@@ -47,7 +47,7 @@
             $add = $group->getAdd();
             $remove = $group->getRemove();
             if ($add || $remove) {
-                $ids = $this->get{{ reference.field|ucfirst }}();
+                $ids = (array)$this->get{{ reference.field|ucfirst }}();
                 foreach ($add as $document) {
                     $ids[] = $document->getId();
                 }
@@ -69,7 +69,7 @@
 {% if reference.discriminatorMap %}
                 $discriminatorMapValues = {{ reference.discriminatorMap|var_export }};
 {% endif %}
-                $ids = $this->get{{ reference.field|ucfirst }}();
+                $ids = (array)$this->get{{ reference.field|ucfirst }}();
                 foreach ($add as $document) {
 {% if reference.discriminatorMap %}
                     if (false === $discriminatorValue = array_search(get_class($document), $discriminatorMapValues)) {
