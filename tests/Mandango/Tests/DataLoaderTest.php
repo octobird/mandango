@@ -41,6 +41,14 @@ class DataLoaderTest extends TestCase
                         'category_2',
                         'category_3',
                     ),
+                    'translations' => array(
+                        'en' => array(
+                            'title' => 'The Apple'
+                        ),
+                        'de' => array(
+                            'title' => 'Die Apfel'
+                        )
+                    )
                 ),
                 'article_2' => array(
                     'title' => 'My Article 2',
@@ -84,6 +92,7 @@ class DataLoaderTest extends TestCase
         $this->assertSame('Contuent', $article->getContent());
         $this->assertSame('Francisco', $article->getAuthor()->getName());
         $this->assertSame(2, count($article->getCategories()->getSaved()));
+        $this->assertSame(2, count($article->getTranslations()->getSaved()));
 
         $article = $this->mandango->getRepository('Model\Article')->createQuery(array('title' => 'My Article 2'))->one();
         $this->assertNotNull($article);

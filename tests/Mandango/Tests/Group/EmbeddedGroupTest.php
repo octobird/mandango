@@ -22,8 +22,8 @@ class EmbeddedGroupTest extends TestCase
             array('name' => 'foo'),
             array('name' => 'bar'),
         );
-
         $group = new EmbeddedGroup('Model\Comment');
+        $group->setMongoType(\Mandango\Group\AbstractGroup::MONGO_TYPE_ARRAY);
         $group->setRootAndPath($article = $this->mandango->create('Model\Article'), 'comments');
         $group->setSavedData($data);
         $this->assertSame(2, $group->count());
@@ -34,6 +34,23 @@ class EmbeddedGroupTest extends TestCase
         $this->assertEquals('bar', $saved[1]->getName());
         $this->assertEquals($article, $saved[1]->_root);
         $this->assertEquals('comments.1', $saved[1]->_path);
+
+        $data = [
+            'en' => ['title' => 'The Apple'],
+            'de' => ['title' => 'Die Apfel'],
+        ];
+        $group = new EmbeddedGroup('Model\Translation');
+        $group->setMongoType(\Mandango\Group\AbstractGroup::MONGO_TYPE_OBJECT);
+        $group->setRootAndPath($article = $this->mandango->create('Model\Article'), 'translations');
+        $group->setSavedData($data);
+        $this->assertSame(2, $group->count());
+        $saved = $group->getSaved();
+        $this->assertEquals('The Apple', $saved['en']->getTitle());
+        $this->assertEquals($article, $saved['en']->_root);
+        $this->assertEquals('translations.en', $saved['en']->_path);
+        $this->assertEquals('Die Apfel', $saved['de']->getTitle());
+        $this->assertEquals($article, $saved['de']->_root);
+        $this->assertEquals('translations.de', $saved['de']->_path);
     }
 
     public function testRootAndPath()
