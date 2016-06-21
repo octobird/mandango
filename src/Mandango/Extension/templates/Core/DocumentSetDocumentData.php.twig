@@ -73,6 +73,9 @@
 {% if embedded_many.inherited is not defined or not embedded_many.inherited %}
         if (isset($data['{{ name }}'])) {
             $embedded = new \Mandango\Group\EmbeddedGroup('{{ embedded_many.class }}');
+{% if embedded_many.isObject %}
+            $embedded->setMongoType(\Mandango\Group\AbstractGroup::MONGO_TYPE_OBJECT);
+{% endif %}
 {% if config_class.isEmbedded %}
             if ($this->_root) {
                 $embedded->setRootAndPath($this->_root, $this->_path . '.{{ name }}');

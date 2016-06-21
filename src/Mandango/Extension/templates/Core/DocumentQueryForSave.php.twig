@@ -16,7 +16,7 @@
 
 {% else %}
         $isNew = $this->isNew();
-        $query = array();
+        $query = [];
         $reset = false;
 
 {% endif %}
@@ -124,22 +124,40 @@
 {% if embedded.inherited is not defined or not embedded.inherited %}
                 if (isset($this->data['embeddedsMany']['{{ name }}'])) {
                     $group = $this->data['embeddedsMany']['{{ name }}'];
+                    $mongoType = $group->getMongoType();
+
                     foreach ($group->getSaved() as $document) {
                         $query = $document->queryForSave($query, $isNew);
                     }
-                    foreach ($group->getAdd() as $document) {
+
+                    foreach ($group->getRemove() as $document) {
+                        $query['$unset'][$document->_path] = 1;
+                    }
+
+                    $add = null;
+                    foreach ($group->getAdd() as $key => $document) {
                         $q = $document->queryForSave(array(), true);
-                        // TODO: use a flag on the document instead, this makes me puke.
                         foreach (explode('.', $document->_path) as $name) {
                             if (0 === strpos($name, '_add')) {
                                 $name = substr($name, 4);
                             }
                             $q = $q[$name];
                         }
-                        $query['$pushAll'][$group->_path][] = $q;
+                        $add[$key] = $q;
                     }
-                    foreach ($group->getRemove() as $document) {
-                        $query['$unset'][$document->_path] = 1;
+
+                    if ($mongoType == \Mandango\Group\AbstractGroup::MONGO_TYPE_ARRAY) {
+                        if (null !== $add) {
+                            $query['$pushAll'][$group->_path] = $add;
+                        }
+                    } elseif ($mongoType == \Mandango\Group\AbstractGroup::MONGO_TYPE_OBJECT) {
+                        if (!empty($add)) {
+                            foreach ($add as $key => $q) {
+                                $query['$set'][$group->_path . '.' . $key] = $q;
+                            }
+                        }
+                    } else {
+                        throw new \LogicException('The mandango group\'s type is neither an array nor an object. It was: ' . $mongoType);
                     }
                 }
 {% endif %}

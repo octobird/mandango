@@ -40,7 +40,15 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
     const MONGO_TYPE_ARRAY  = 0;
     const MONGO_TYPE_OBJECT = 1;
 
-    protected $mongoType = self::MONGO_TYPE_ARRAY;
+    private $mongoType = self::MONGO_TYPE_ARRAY;
+
+    public function getMongoType() {
+        return $this->mongoType;
+    }
+
+    public function setMongoType($mongoType) {
+        $this->mongoType = $mongoType;
+    }
 
     /**
      * Adds document/s to the add queue of the group.
@@ -50,8 +58,10 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
      *
      * @api
      */
-    public function add($documents, $preserveKeys = false)
+    public function add($documents)
     {
+        $preserveKeys = $this->mongoType == self::MONGO_TYPE_OBJECT;
+
         if (!is_array($documents)) {
             $documents = array($documents);
             $preserveKeys = false;
@@ -153,7 +163,11 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
             }
         }
 
-        return array_values($documents);
+        if ($this->mongoType == self::MONGO_TYPE_ARRAY) {
+            return array_values($documents);
+        } else {
+            return $documents;
+        }
     }
 
     /**

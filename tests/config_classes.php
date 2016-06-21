@@ -20,6 +20,7 @@ return array(
         ),
         'embeddedsMany' => array(
             'comments' => array('class' => 'Model\Comment'),
+            'translations' => array('class' => 'Model\Translation', 'isObject' => true)
         ),
         'referencesOne' => array(
             'author'      => array('class' => 'Model\Author', 'field' => 'authorId', 'onDelete' => 'cascade'),
@@ -58,6 +59,12 @@ return array(
                 'keys' => array('authorId' => 1, 'isActive' => 1),
             ),
         ),
+    ),
+    'Model\Translation' => array(
+        'isEmbedded' => true,
+        'fields' => array(
+            'title' => 'string'
+        )
     ),
     'Model\ArticleInformation' => array(
         'fields' => array(

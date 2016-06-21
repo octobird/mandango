@@ -278,6 +278,14 @@ class CoreQueryForSaveTest extends TestCase
                 ->setName(456)
                 ->setLine('barfoo'),
         ));
+
+        $translation_en = $this->mandango->create('Model\Translation')
+            ->setTitle('The Apple');
+        $translation_de = $this->mandango->create('Model\Translation')
+            ->setTitle('Die Apfel');
+        $translation_hu = $this->mandango->create('Model\Translation')
+            ->setTitle('Az Alma');
+
         $comment1->getInfos()->remove(array(
             $this->mandango->create('Model\Info')->setName('ups')
         ));
@@ -292,6 +300,12 @@ class CoreQueryForSaveTest extends TestCase
         $article->getComments()->remove(array(
             $this->mandango->create('Model\Comment')->setName(567)
         ));
+
+        $article->getTranslations()->add([
+            'en' => $translation_en,
+            'de' => $translation_de,
+            'hu' => $translation_hu
+        ]);
 
         $this->assertSame(array(
             'title'  => 'foo',
@@ -315,6 +329,11 @@ class CoreQueryForSaveTest extends TestCase
                     'text' => 'bar',
                 ),
             ),
+            'translations' => [
+                'en' => ['title' => 'The Apple'],
+                'de' => ['title' => 'Die Apfel'],
+                'hu' => ['title' => 'Az Alma']
+            ]
         ), $article->queryForSave());
     }
 
@@ -349,6 +368,11 @@ class CoreQueryForSaveTest extends TestCase
                     'name' => 'removing2',
                 ),
             ),
+            'translations' => [
+                'en' => ['title' => 'foo'],
+                'de' => ['title' => 'bar'],
+                'nl' => ['title' => 'De Appel']
+            ]
         ));
         $article->setTitle('foobar');
         $comments = $article->getComments()->getSaved();
@@ -361,6 +385,16 @@ class CoreQueryForSaveTest extends TestCase
         $article->getComments()->remove($comments[3]);
         $article->getComments()->add($this->mandango->create('Model\Comment')->setName('inserting1')->setText(123));
         $article->getComments()->add($this->mandango->create('Model\Comment')->setName('inserting2')->setText(321));
+
+        $translations = $article->getTranslations()->getSaved();
+        $translations['en']->setTitle('The Apple');
+        $translations['de']->setTitle('Die Apfel');
+        $article->getTranslations()->remove($translations['nl']);
+
+        $article->getTranslations()->add([
+            'hu' => $this->mandango->create('Model\Translation')->setTitle('Az Alma')
+        ]);
+
         $comments[0]->getInfos()->add($this->mandango->create('Model\Info')->setName('insertinfo1')->setNote(678));
         $comments[1]->getInfos()->add($this->mandango->create('Model\Info')->setName('insertinfo2')->setNote(876));
 
@@ -373,6 +407,9 @@ class CoreQueryForSaveTest extends TestCase
                 'comments.0.infos.0.text' => '567',
                 'comments.1.name' => 'mon',
                 'comments.1.text' => 'go',
+                'translations.en.title' => 'The Apple',
+                'translations.de.title' => 'Die Apfel',
+                'translations.hu' => ['title' => 'Az Alma']
             ),
             '$unset' => array(
                 'comments.0.text' => 1,
@@ -380,6 +417,7 @@ class CoreQueryForSaveTest extends TestCase
                 'comments.0.infos.1' => 1,
                 'comments.2' => 1,
                 'comments.3' => 1,
+                'translations.nl' => 1
             ),
             '$pushAll' => array(
                 'comments.0.infos' => array(

@@ -12,6 +12,9 @@
     {
         if (!isset($this->data['embeddedsMany']['{{ name }}'])) {
             $this->data['embeddedsMany']['{{ name }}'] = $embedded = new \Mandango\Group\EmbeddedGroup('{{ embedded.class }}');
+{% if embedded.isObject %}
+            $embedded->setMongoType(\Mandango\Group\AbstractGroup::MONGO_TYPE_OBJECT);
+{% endif %}
 {# not embedded #}
 {% if not config_class.isEmbedded %}
             $embedded->setRootAndPath($this, '{{ name }}');

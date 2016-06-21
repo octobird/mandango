@@ -572,6 +572,23 @@ class CoreDocumentTest extends TestCase
         $comment = $this->mandango->create('Model\Comment');
         $this->assertSame($article, $article->addComments($comment));
         $this->assertSame(array($comment), $article->getComments()->getAdd());
+
+        $translation_en = $this->mandango->create('Model\Translation');
+        $translation_en->setTitle('The Apple');
+        $translation_de = $this->mandango->create('Model\Translation');
+        $translation_de->setTitle('Die Apfel');
+        $trarr = [
+            'en' => $translation_en,
+            'de' => $translation_de
+        ];
+        $article->getTranslations()->add($trarr);
+        $this->assertSame(
+            [
+                'en' => ['title' => 'The Apple'],
+                'de' => ['title' => 'Die Apfel']
+            ],
+            $article->getTranslations()->toArray()
+        );
     }
 
     public function testEmbeddedsManyRemove()
@@ -908,7 +925,8 @@ class CoreDocumentTest extends TestCase
             'database' => null,
             'source'   => null,
             'simpleEmbedded' => null,
-            'comments' => array()
+            'comments' => array(),
+            'translations' => array()
         ), $article->toArray());
     }
 
@@ -956,10 +974,6 @@ class CoreDocumentTest extends TestCase
                 'note' => null,
                 'line' => 345,
                 'from' => null,
-               /* 'authorId' => null,
-                'categoryIds' => null,
-                'author' => null,
-                'categories' => array(),*/
                 'info' => array (
                     'name' => 456,
                     'text' => 567,
@@ -974,13 +988,10 @@ class CoreDocumentTest extends TestCase
                     'text' => null,
                     'note' => 'foo',
                     'line' => null,
-                    /*'authorId' => null,
-                    'categoryIds' => null,
-                    'author' => null,
-                    'categories' => array(),*/
                     'infos' => array()
                 )
-            )
+            ),
+            'translations' => array()
         ), $article->toArray());
 
         $this->assertSame(
@@ -1084,7 +1095,8 @@ class CoreDocumentTest extends TestCase
             'database' => null,
             'source'   => null,
             'simpleEmbedded' => null,
-            'comments' => array()
+            'comments' => array(),
+            'translations' => array()
         ), $article->toArray());
     }
 

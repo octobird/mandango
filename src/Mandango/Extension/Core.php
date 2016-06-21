@@ -432,6 +432,9 @@ class Core extends Extension
             if ($this->configClass['inheritance'] && !isset($embedded['inherited'])) {
                 $embedded['inherited'] = false;
             }
+            if (!isset($embedded['isObject'])) {
+                $embedded['isObject'] = false;
+            }
         }
     }
 
