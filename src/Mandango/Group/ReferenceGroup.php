@@ -75,9 +75,9 @@ class ReferenceGroup extends Group
     /**
      * {@inheritdoc}
      */
-    protected function doInitializeSaved($data)
+    protected function doInitializeSaved(array $data)
     {
-        return $this->getParent()->getMandango()->getRepository($this->getDocumentClass())->findById(parent::doInitializeSaved($data));
+        return $this->getParent()->getMandango()->getRepository($this->getDocumentClass())->findById($data);
     }
 
     /**

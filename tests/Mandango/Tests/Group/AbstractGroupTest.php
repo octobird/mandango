@@ -22,6 +22,11 @@ class AbstractGroup extends BaseAbstractGroup
     {
         return $this->forSaved;
     }
+
+    protected function doInitializeSaved(array $data)
+    {
+        return $data;
+    }
 }
 
 class AbstractGroupTest extends TestCase

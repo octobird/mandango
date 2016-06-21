@@ -37,21 +37,34 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
      */
     private $remove = array();
 
+    const MONGO_TYPE_ARRAY  = 0;
+    const MONGO_TYPE_OBJECT = 1;
+
+    protected $mongoType = self::MONGO_TYPE_ARRAY;
+
     /**
      * Adds document/s to the add queue of the group.
      *
      * @param \Mandango\Document\AbstractDocument|array $documents One or more documents.
+     * @param boolean Wether to use the keys in the given array or not. Default is not to use them.
      *
      * @api
      */
-    public function add($documents)
+    public function add($documents, $preserveKeys = false)
     {
         if (!is_array($documents)) {
             $documents = array($documents);
+            $preserveKeys = false;
         }
 
-        foreach ($documents as $document) {
-            $this->add[] = $document;
+        if ($preserveKeys) {
+            foreach ($documents as $key => $document) {
+                $this->add[$key] = $document;
+            }
+        } else {
+            foreach ($documents as $document) {
+                $this->add[] = $document;
+            }
         }
     }
 
@@ -149,8 +162,8 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
     public function toArray(array $fields = array())
     {
         $arrays = array();
-        foreach ($this->all() as $document) {
-            $arrays[] = $document->toArray($fields);
+        foreach ($this->all() as $key => $document) {
+            $arrays[$key] = $document->toArray($fields);
         }
         return $arrays;
     }
@@ -218,13 +231,7 @@ abstract class AbstractGroup implements \Countable, \IteratorAggregate
      *
      * @api
      */
-    protected function doInitializeSaved($data)
-    {
-        if (!is_array($data) && ! $data instanceof \MongoDB\Model\BSONArray) {
-            throw new \InvalidArgumentException("The $data parameter must be an array or BSONArray");
-        }
-        return $data;
-    }
+    abstract protected function doInitializeSaved(array $data);
 
     /**
      * Returns the number of all documents.

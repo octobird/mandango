@@ -22,6 +22,10 @@ class Group extends BaseGroup
     {
         return $this->forSaved;
     }
+    protected function doInitializeSaved(array $data)
+    {
+        return $data;
+    }
 }
 
 class GroupTest extends TestCase

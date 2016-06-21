@@ -62,9 +62,9 @@ class EmbeddedGroup extends Group
     /**
      * {@inheritdoc}
      */
-    public function add($documents)
+    public function add($documents, $preserveKeys = false)
     {
-        parent::add($documents);
+        parent::add($documents, $preserveKeys);
 
         if ($this->_root) {
             foreach ($this->getAdd() as $key => $document) {
@@ -78,11 +78,8 @@ class EmbeddedGroup extends Group
      *
      * @param array $data The saved data.
      */
-    public function setSavedData($data)
+    public function setSavedData(array $data)
     {
-        if (!is_array($data) && ! $data instanceof \MongoDB\Model\BSONArray) {
-            throw new \InvalidArgumentException("The $data parameter must be an array or BSONArray");
-        }
         $this->_saved_data = $data;
     }
 
@@ -139,16 +136,14 @@ class EmbeddedGroup extends Group
             ->getCollection()
             ->findOne(array('_id' => $this->_root->getId()), array($this->_path => true));
 
-        return ($result && isset($result[$this->_path])) ? $result[$this->_path] : array();
+        return ($result && isset($result[$this->_path])) ? (array)$result[$this->_path] : [];
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doInitializeSaved($data)
+    protected function doInitializeSaved(array $data)
     {
-        $data = parent::doInitializeSaved($data);
-
         if (null === $this->_root) {
             return [];
         }
@@ -156,9 +151,9 @@ class EmbeddedGroup extends Group
         $documentClass = $this->getDocumentClass();
         $mandango = $this->_root->getMandango();
 
-        $saved = array();
+        $saved = [];
         foreach ($data as $key => $datum) {
-            $saved[] = $document = new $documentClass($mandango);
+            $saved[$key] = $document = new $documentClass($mandango);
             $document->setDocumentData($datum);
             $document->setRootAndPath($this->_root, $this->_path . '.' . $key);
         }

@@ -22,6 +22,10 @@ class PolymorphicGroup extends BasePolymorphicGroup
     {
         return $this->forSaved;
     }
+    protected function doInitializeSaved(array $data)
+    {
+        return $data;
+    }
 }
 
 class PolymorphicGroupTest extends TestCase

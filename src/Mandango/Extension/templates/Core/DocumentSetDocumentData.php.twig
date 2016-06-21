@@ -80,7 +80,7 @@
 {% else %}
             $embedded->setRootAndPath($this, '{{ name }}');
 {% endif %}
-            $embedded->setSavedData($data['{{ name }}']);
+            $embedded->setSavedData((array)$data['{{ name }}']);
             $this->data['embeddedsMany']['{{ name }}'] = $embedded;
         }
 {% endif %}
