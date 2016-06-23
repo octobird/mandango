@@ -127,7 +127,9 @@
                     foreach ($group->getSaved() as $document) {
                         $query = $document->queryForSave($query, $isNew);
                     }
-                    foreach ($group->getAdd() as $document) {
+
+                    $add = null;
+                    foreach ($group->getAdd() as $key => $document) {
                         $q = $document->queryForSave(array(), true);
                         // TODO: use a flag on the document instead, this makes me puke.
                         foreach (explode('.', $document->_path) as $name) {
@@ -141,6 +143,14 @@
                     foreach ($group->getRemove() as $document) {
                         $query['$unset'][$document->_path] = 1;
                     }
+
+                    // Unset a document only if it isn't overwritten by $set
+                    foreach ($group->getRemove() as $document) {
+                        if (!array_key_exists($document->_path, $query['$set'])) {
+                            $query['$unset'][$document->_path] = 1;
+                        }
+                    }
+
                 }
 {% endif %}
 {% endfor %}
