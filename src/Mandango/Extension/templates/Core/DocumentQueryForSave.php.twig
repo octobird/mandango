@@ -158,7 +158,7 @@
 
                     // Unset a document only if it isn't overwritten by $set
                     foreach ($group->getRemove() as $document) {
-                        if (!array_key_exists($document->_path, $query['$set'])) {
+                        if (array_key_exists('$set', $query) && !array_key_exists($document->_path, $query['$set'])) {
                             $query['$unset'][$document->_path] = 1;
                         }
                     }
