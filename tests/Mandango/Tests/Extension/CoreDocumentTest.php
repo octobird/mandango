@@ -584,8 +584,8 @@ class CoreDocumentTest extends TestCase
         $article->getTranslations()->add($trarr);
         $this->assertSame(
             [
-                'en' => ['title' => 'The Apple'],
-                'de' => ['title' => 'Die Apfel']
+                'en' => ['title' => 'The Apple', 'content' => null],
+                'de' => ['title' => 'Die Apfel', 'content' => null]
             ],
             $article->getTranslations()->toArray()
         );

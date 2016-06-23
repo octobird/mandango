@@ -63,7 +63,8 @@ return array(
     'Model\Translation' => array(
         'isEmbedded' => true,
         'fields' => array(
-            'title' => 'string'
+            'title' => 'string',
+            'content' => 'string'
         )
     ),
     'Model\ArticleInformation' => array(

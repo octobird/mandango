@@ -57,8 +57,8 @@
 {% if embedded.inherited is not defined or not embedded.inherited %}
         if (isset($array['{{ name }}'])) {
             $embeddeds = array();
-            foreach ($array['{{ name }}'] as $documentData) {
-                $embeddeds[] = $embedded = new \{{ embedded.class }}($this->getMandango());
+            foreach ($array['{{ name }}'] as $key => $documentData) {
+                $embeddeds[$key] = $embedded = new \{{ embedded.class }}($this->getMandango());
                 $embedded->setDocumentData($documentData);
             }
             $this->get{{ name|ucfirst }}()->replace($embeddeds);
