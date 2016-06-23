@@ -130,10 +130,6 @@
                         $query = $document->queryForSave($query, $isNew);
                     }
 
-                    foreach ($group->getRemove() as $document) {
-                        $query['$unset'][$document->_path] = 1;
-                    }
-
                     $add = null;
                     foreach ($group->getAdd() as $key => $document) {
                         $q = $document->queryForSave(array(), true);
@@ -159,6 +155,14 @@
                     } else {
                         throw new \LogicException('The mandango group\'s type is neither an array nor an object. It was: ' . $mongoType);
                     }
+
+                    // Unset a document only if it isn't overwritten by $set
+                    foreach ($group->getRemove() as $document) {
+                        if (!array_key_exists($document->_path, $query['$set'])) {
+                            $query['$unset'][$document->_path] = 1;
+                        }
+                    }
+
                 }
 {% endif %}
 {% endfor %}
