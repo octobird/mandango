@@ -145,13 +145,10 @@ class CoreDocumentTest extends TestCase
         $this->assertSame($author, $article->getAuthor());
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testReferencesOneGetterQueryNotExist()
     {
         $article = $this->mandango->create('Model\Article')->setAuthorId(new \MongoDB\BSON\ObjectID($this->generateObjectId()));
-        $article->getAuthor();
+        $this->assertNull($article->getAuthor());
     }
 
     public function testReferencesManyGetter()

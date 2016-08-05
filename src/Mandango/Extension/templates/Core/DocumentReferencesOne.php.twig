@@ -42,7 +42,7 @@
                 return null;
             }
             if (!$document = $this->getMandango()->getRepository('{{ referenceOne.class }}')->findOneById($id)) {
-                throw new \RuntimeException('The reference "{{ name }}" does not exist.');
+                return null;
             }
             $this->data['referencesOne']['{{ name }}'] = $document;
         }
