@@ -191,6 +191,9 @@ abstract class Document extends AbstractDocument
 
         foreach ($this->getQueryHashes() as $hash => $_) {
             $value = $cache->has($hash) ? $cache->get($hash) : array();
+            if (!is_array($value)) {
+                $value = array();
+            }
             $value['fields'][$field] = 1;
             $cache->set($hash, $value);
         }
