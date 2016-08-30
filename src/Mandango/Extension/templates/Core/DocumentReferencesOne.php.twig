@@ -106,7 +106,7 @@
             $discriminatorValue = $ref['{{ referenceOne.discriminatorField }}'];
 {% endif %}
             if (!$document = $this->getMandango()->getRepository($discriminatorValue)->findOneById($ref['id'])) {
-                throw new \RuntimeException('The reference "{{ name }}" does not exist.');
+                $document = null;
             }
             $this->data['referencesOne']['{{ name }}'] = $document;
         }
