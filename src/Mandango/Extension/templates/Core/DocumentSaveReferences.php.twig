@@ -12,7 +12,10 @@
 {# not polymorphic #}
 {% if reference.class is defined %}
         if (isset($this->data['referencesOne']['{{ name }}'])) {
-            $this->data['referencesOne']['{{ name }}']->save();
+            $doc = $this->data['referencesOne']['{{ name }}'];
+            if ($doc->isNew()) {
+                $doc->save();
+            }
         }
 {% endif %}
 {% endif %}
@@ -27,11 +30,15 @@
             $group = $this->data['referencesMany']['{{ name }}'];
             $documents = array();
             foreach ($group->getAdd() as $document) {
-                $documents[] = $document;
+                if ($document->isNew()) {
+                    $documents[] = $document;
+                }
             }
             if ($group->isSavedInitialized()) {
                 foreach ($group->getSaved() as $document) {
-                    $documents[] = $document;
+                    if ($document->isNew()) {
+                        $documents[] = $document;
+                    }
                 }
             }
             if ($documents) {

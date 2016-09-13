@@ -336,9 +336,11 @@ class CoreDocumentTest extends TestCase
 
         $article->saveReferences();
 
-        foreach ($articleCategories as $category) {
-            $this->assertFalse($category->isModified());
-        }
+        // saveReferences SHOULD save isNew() objects, but not the others.
+        $this->assertTrue($articleCategories[0]->isModified());
+        $this->assertTrue($articleCategories[1]->isModified());
+        $this->assertFalse($articleCategories[2]->isModified());
+        $this->assertFalse($articleCategories[3]->isModified());
     }
 
     public function testSaveReferencesShouldSaveReferencesInEmbeddedsOne()
