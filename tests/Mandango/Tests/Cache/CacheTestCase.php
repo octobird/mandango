@@ -49,7 +49,7 @@ abstract class CacheTestCase extends TestCase
     {
         $this->cache->set('foo', 'bar');
 
-        $this->assertNull($this->cache->get('ups'));
+        $this->assertNull($this->cache->get('ups2'));
     }
 
     public function testRemoveShouldRemoveAKey()
