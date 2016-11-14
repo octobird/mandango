@@ -17,6 +17,10 @@ class ApcuCacheTest extends CacheTestCase
 {
     protected function getCacheDriver()
     {
-        return new ApcuCache();
+        if (extension_loaded('apcu')) {
+            return new ApcuCache();
+        } else {
+            $this->markTestIncomplete();
+        }
     }
 }
