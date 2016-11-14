@@ -11,7 +11,7 @@ php:
 
 before_script:
   - yes "" | pecl install mongodb
-  - yes "" | pecl install APCu
+  - yes "" | pecl install APCu || true
   - ./composer.phar install
 
 script: vendor/bin/phpunit
