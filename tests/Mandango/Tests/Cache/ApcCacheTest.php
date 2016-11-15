@@ -13,12 +13,12 @@ namespace Mandango\Tests\Cache;
 
 use Mandango\Cache\ApcuCache;
 
-class ApcuCacheTest extends CacheTestCase
+class ApcCacheTest extends CacheTestCase
 {
     protected function getCacheDriver()
     {
-        if (extension_loaded('apcu')) {
-            return new ApcuCache();
+        if (extension_loaded('apc')) {
+            return new ApcCache();
         } else {
             $this->markTestSkipped();
         }

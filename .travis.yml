@@ -12,6 +12,7 @@ php:
 before_script:
   - yes "" | pecl install mongodb
   - yes "" | pecl install APCu || true
+  - echo 'apc.enable_cli = 1' >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
   - ./composer.phar install
 
 script: vendor/bin/phpunit
