@@ -267,7 +267,7 @@ class RepositoryTest extends TestCase
         ;
         $collection
             ->expects($this->any())
-            ->method('update')
+            ->method('updateMany')
             ->with($criteria, $newObject)
         ;
 
@@ -286,7 +286,7 @@ class RepositoryTest extends TestCase
         ;
         $collection
             ->expects($this->any())
-            ->method('remove')
+            ->method('deleteMany')
             ->with($criteria)
         ;
 

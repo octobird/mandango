@@ -23,7 +23,7 @@ class LazyCacheTest extends CacheTestCase
     {
         parent::setUp();
 
-        $this->delegateMock = $this->getMock('Mandango\Cache\CacheInterface');
+        $this->delegateMock = $this->createMock('Mandango\Cache\CacheInterface');
         $this->lazyCache = new LazyCache($this->delegateMock);
     }
 

@@ -139,7 +139,7 @@ class MandangoTest extends TestCase
      */
     public function testGetMetadata($documentClass)
     {
-        $metadataFactory = $this->getMock('Mandango\MetadataFactory');
+        $metadataFactory = $this->createMock('Mandango\MetadataFactory');
 
         $metadataFactory
             ->expects($this->once())
