@@ -1,6 +1,8 @@
 # Mandango
 
-[![Build Status](https://travis-ci.org/netom/mandango.png?branch=master)](https://travis-ci.org/netom/mandango)
+***This is an experimental branch for mandango 2.0***
+
+[![Build Status](https://travis-ci.org/netom/mandango.png?branch=2)](https://travis-ci.org/netom/mandango)
 
 Mandango is a simple, powerful and ultrafast Object Document Mapper (ODM) for PHP and MongoDB.
 
