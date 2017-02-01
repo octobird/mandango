@@ -24,6 +24,12 @@ class Connection
     private $dbName;
     private $options;
 
+    /**
+     * @see https://docs.mongodb.com/php-library/master/reference/method/MongoDBClient__construct/#definition
+     * @var array
+     */
+    private $driverOptions;
+
     private $loggerCallable;
     private $logDefault;
 
@@ -33,17 +39,19 @@ class Connection
     /**
      * Constructor.
      *
-     * @param string $uri     The connection uri.
-     * @param string $dbName  The database name.
-     * @param array  $options The \Mongo options (optional).
+     * @param string $uri           The connection uri.
+     * @param string $dbName        The database name.
+     * @param array  $options       The \Mongo options (optional).
+     * @param array  $driverOptions Driver-specific options
      *
      * @api
      */
-    public function __construct($uri, $dbName, array $options = array())
+    public function __construct($uri, $dbName, array $options = array(), array $driverOptions = [])
     {
         $this->uri = $uri;
         $this->dbName = $dbName;
         $this->options = $options;
+        $this->driverOptions = $driverOptions;
     }
 
     /**
@@ -137,12 +145,38 @@ class Connection
     }
 
     /**
+     * Sets the Driver-specific options.
+     *
+     * @see https://docs.mongodb.com/php-library/master/reference/method/MongoDBClient__construct/#definition
+     *
+     * @param array $driverOptions
+     *
+     * @throws \LogicException If the client is initialized.
+     */
+    public function setDriverOptions(array $driverOptions)
+    {
+        if (null !== $this->client) {
+            throw new \LogicException('The client has already been initialized.');
+        }
+
+        $this->driverOptions = $driverOptions;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDriverOptions()
+    {
+        return $this->driverOptions;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getClient()
     {
         if (null === $this->client) {
-            $this->client = new \MongoDB\Client($this->uri, $this->options);
+            $this->client = new \MongoDB\Client($this->uri, $this->options, $this->driverOptions);
         }
 
         return $this->client;

@@ -83,4 +83,26 @@ class ConnectionTest extends TestCase
             $this->assertInstanceOf('LogicException', $e);
         }
     }
+
+    public function testSetDriverOptions()
+    {
+        $connection = new Connection($this->uri, $this->dbName);
+        $driverOptions = [
+            'typeMap' => [
+                'array' => 'array',
+                'document' => 'array',
+                'root' => 'array',
+            ]
+        ];
+        $connection->setDriverOptions($driverOptions);
+        $this->assertSame($driverOptions, $connection->getDriverOptions());
+
+        $connection->getClient();
+        try {
+            $connection->setDriverOptions([]);
+            $this->fail();
+        } catch (\Exception $e) {
+            $this->assertInstanceOf('LogicException', $e);
+        }
+    }
 }
