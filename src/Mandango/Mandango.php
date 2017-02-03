@@ -174,7 +174,7 @@ class Mandango
      *
      * @param string $name The connection name.
      *
-     * @return ConnectionInterface The connection.
+     * @return Connection The connection.
      *
      * @throws \InvalidArgumentException If the connection does not exists.
      *
@@ -228,7 +228,7 @@ class Mandango
     /**
      * Returns the default connection.
      *
-     * @return \Mandango\ConnectionInterface The default connection.
+     * @return Connection The default connection.
      *
      * @throws \RuntimeException If there is not default connection name.
      * @throws \RuntimeException If the default connection does not exists.
