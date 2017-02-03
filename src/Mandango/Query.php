@@ -599,7 +599,7 @@ abstract class Query implements \Countable, \IteratorAggregate
     /**
      * Create a cursor with the data of the query.
      *
-     * @return \MongoCursor A cursor with the data of the query.
+     * @return \MongoDB\Driver\Cursor A cursor with the data of the query.
      */
     public function createCursor()
     {
