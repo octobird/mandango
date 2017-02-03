@@ -325,7 +325,7 @@ abstract class Repository
      * @param mixed $pipeline List of pipeline operations
      * @param array $options  Command options
      *
-     * @return array The result
+     * @return \Traversable The result
      *
      * @see \MongoDB\Collection::aggregate()
      *
