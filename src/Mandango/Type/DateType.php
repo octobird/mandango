@@ -26,12 +26,18 @@ class DateType extends Type
     public function toMongo($value)
     {
         if ($value instanceof \DateTime) {
-            $value = $value->getTimestamp();
+            if (version_compare(MONGODB_VERSION, '1.2.0', '<')) {
+                $value = $value->getTimestamp();
+            }
         } elseif (is_string($value)) {
             $value = strtotime($value);
         }
 
-        return new \MongoDB\BSON\UTCDateTime($value * 1000);
+        if (is_int($value)) {
+            $value *= 1000;
+        }
+
+        return new \MongoDB\BSON\UTCDateTime($value);
     }
 
     /**
@@ -47,7 +53,9 @@ class DateType extends Type
      */
     public function toMongoInString()
     {
-        return '%to% = %from%; if (%to% instanceof \DateTime) { %to% = %to%->getTimestamp(); } elseif (is_string(%to%)) { %to% = strtotime(%to%); } %to% = new \MongoDB\BSON\UTCDateTime(%to% * 1000);';
+        return <<<EOF
+%to% = %from%; if (%to% instanceof \DateTime) { if (version_compare(MONGODB_VERSION, '1.2.0', '<')) { %to% = %to%->getTimestamp(); }} elseif (is_string(%to%)) { %to% = strtotime(%to%); } if (is_int(%to%)) { %to% *= 1000; } %to% = new \MongoDB\BSON\UTCDateTime(%to%);
+EOF;
     }
 
     /**
