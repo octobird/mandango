@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "152c3487e59797e9cab4472adbb54636",
+    "content-hash": "0e2d38e0af429d1eb4b10113132b134d",
     "packages": [
         {
             "name": "mongator/mondator",
