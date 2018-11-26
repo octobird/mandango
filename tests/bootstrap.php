@@ -4,6 +4,7 @@ error_reporting(E_ALL & ~E_STRICT);
 
 $loader = require __DIR__.'/../vendor/autoload.php';
 $loader->add('Mandango\Tests', __DIR__);
+$loader->add('Mandango\Mondator\Tests', __DIR__);
 $loader->add('Model', __DIR__);
 
 // mondator
