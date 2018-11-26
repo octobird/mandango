@@ -341,7 +341,8 @@ abstract class ClassExtension
         $variables['config_class'] = $this->configClass;
         $variables['config_classes'] = $this->configClasses;
 
-        $result = $twig->loadTemplate($name)->render($variables);
+        $template = $twig->createTemplate($name);
+        $result = $template->render($variables);
 
         // properties
         $expression = '/
@@ -403,7 +404,7 @@ abstract class ClassExtension
                 throw new \RuntimeException('Twig is required to use templates.');
             }
 
-            $loader = new \Twig_Loader_String();
+            $loader = new \Twig_Loader_Array();
             $twig = new \Twig_Environment($loader, array(
                 'autoescape'       => false,
                 'strict_variables' => true,

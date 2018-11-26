@@ -4,54 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e2d38e0af429d1eb4b10113132b134d",
+    "content-hash": "d3fde219233a25b966fe7af884e9c210",
     "packages": [
-        {
-            "name": "mongator/mondator",
-            "version": "v2.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nvbooster/mondator.git",
-                "reference": "1bdbd78cbe9586411f78dca197d8e8b52d22a443"
-            },
-            "require": {
-                "php": "^7",
-                "twig/twig": "^2.1"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Mandango\\Mondator\\": "src/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Máximo Cuadros",
-                    "email": "maximo@yunait.com"
-                },
-                {
-                    "name": "Pablo Díez",
-                    "email": "pablodip@gmail.com"
-                },
-                {
-                    "name": "Ádám Bálint",
-                    "email": "adam.balint@srg.hu"
-                }
-            ],
-            "description": "Easy and flexible class generator for PHP",
-            "keywords": [
-                "class-generator"
-            ],
-            "time": "2017-10-19T01:52:33+00:00"
-        },
         {
             "name": "mongodb/mongodb",
             "version": "1.3.2",
